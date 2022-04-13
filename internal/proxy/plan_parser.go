@@ -161,6 +161,18 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 					return
 				}
 				patch(&ant_ast.IntegerNode{Value: integerNodeLeft.Value / integerNodeRight.Value})
+			} else if leftIdentifier && rightFloat {
+				if floatNodeRight.Value == 0 {
+					optimizer.err = fmt.Errorf("divide by zero")
+					return
+				}
+				patch(&ant_ast.FunctionNode{Name: "div", Arguments: []ant_ast.Node{identifierNodeLeft, floatNodeRight}})
+			} else if leftIdentifier && rightInteger {
+				if integerNodeRight.Value == 0 {
+					optimizer.err = fmt.Errorf("divide by zero")
+					return
+				}
+				patch(&ant_ast.FunctionNode{Name: "div", Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
 			} else {
 				optimizer.err = fmt.Errorf("invalid data type")
 				return
@@ -172,6 +184,12 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 					return
 				}
 				patch(&ant_ast.IntegerNode{Value: integerNodeLeft.Value % integerNodeRight.Value})
+			} else if leftIdentifier && rightInteger {
+				if integerNodeRight.Value == 0 {
+					optimizer.err = fmt.Errorf("modulo by zero")
+					return
+				}
+				patch(&ant_ast.FunctionNode{Name: "mod", Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
 			} else {
 				optimizer.err = fmt.Errorf("invalid data type")
 				return
