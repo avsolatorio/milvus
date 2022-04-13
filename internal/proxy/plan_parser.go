@@ -107,6 +107,10 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 				patch(&ant_ast.FloatNode{Value: float64(integerNodeLeft.Value) - floatNodeRight.Value})
 			} else if leftInteger && rightInteger {
 				patch(&ant_ast.IntegerNode{Value: integerNodeLeft.Value - integerNodeRight.Value})
+			} else if leftIdentifier && rightFloat {
+				patch(&ant_ast.FunctionNode{Name: "sub", Arguments: []ant_ast.Node{identifierNodeLeft, floatNodeRight}})
+			} else if leftIdentifier && rightInteger {
+				patch(&ant_ast.FunctionNode{Name: "sub", Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
 			} else {
 				optimizer.err = fmt.Errorf("invalid data type")
 				return
