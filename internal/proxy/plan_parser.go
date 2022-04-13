@@ -87,13 +87,13 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 			} else if leftInteger && rightInteger {
 				patch(&ant_ast.IntegerNode{Value: integerNodeLeft.Value + integerNodeRight.Value})
 			} else if leftIdentifier && rightFloat {
-				patch(&ant_ast.FunctionNode{Name: "sum", Arguments: []ant_ast.Node{identifierNodeLeft, floatNodeRight}})
+				patch(&ant_ast.FunctionNode{Name: "add", Arguments: []ant_ast.Node{identifierNodeLeft, floatNodeRight}})
 			} else if leftIdentifier && rightInteger {
-				patch(&ant_ast.FunctionNode{Name: "sum", Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
+				patch(&ant_ast.FunctionNode{Name: "add", Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
 			} else if leftFloat && rightIdentifier {
-				patch(&ant_ast.FunctionNode{Name: "sum", Arguments: []ant_ast.Node{identifierNodeRight, floatNodeLeft}})
+				patch(&ant_ast.FunctionNode{Name: "add", Arguments: []ant_ast.Node{identifierNodeRight, floatNodeLeft}})
 			} else if leftInteger && rightIdentifier {
-				patch(&ant_ast.FunctionNode{Name: "sum", Arguments: []ant_ast.Node{identifierNodeRight, integerNodeLeft}})
+				patch(&ant_ast.FunctionNode{Name: "add", Arguments: []ant_ast.Node{identifierNodeRight, integerNodeLeft}})
 			} else {
 				optimizer.err = fmt.Errorf("invalid data type")
 				return
@@ -294,6 +294,24 @@ func getLogicalOpType(opStr string) planpb.BinaryExpr_BinaryOp {
 	default:
 		return planpb.BinaryExpr_Invalid
 	}
+}
+
+func getArithOpType(funcName string) (op planpb.ArithOpType) {
+	switch funcName {
+	case "add":
+		op = planpb.ArithOpType_Add
+	case "sub":
+		op = planpb.ArithOpType_Sub
+	case "mul":
+		op = planpb.ArithOpType_Mul
+	case "div":
+		op = planpb.ArithOpType_Div
+	case "mod":
+		op = planpb.ArithOpType_Mod
+	default:
+		op = planpb.ArithOpType_Invalid
+	}
+	return op
 }
 
 func parseBoolNode(nodeRaw *ant_ast.Node) *ant_ast.BoolNode {
@@ -637,6 +655,41 @@ func (pc *parserContext) handleLeafValue(nodeRaw *ant_ast.Node, dataType schemap
 	}
 
 	return gv, nil
+}
+
+func (pc *parserContext) handleFunction(node *ant_ast.FunctionNode) (*planpb.Expr, error) {
+	var functionArgs []*planpb.Expr
+	switch node.Name {
+	case
+		"sum",
+		"sub",
+		"mul",
+		"div",
+		"mod":
+
+		op := getArithOpType(node.Name)
+		idNode, ok := node.Arguments[0].(*ant_ast.IdentifierNode)
+		if !ok {
+			return nil, fmt.Errorf("left operand of the function must be an identifier")
+		}
+		field, err := pc.handleIdentifier(idNode)
+		if err != nil {
+			return nil, err
+		}
+		valueNode := node.Arguments[1]
+		val, err := pc.handleLeafValue(valueNode, field.DataType)
+		if err != nil {
+			return nil, err
+		}
+		expr := &planpb.Expr{
+			Expr: &planpb.Expr_BinaryArithOpExpr{
+				ColumnInfo: createColumnInfo(field),
+				Op:         op,
+				Value:      val,
+			},
+		}
+	default:
+		return nil, fmt.Errorf("unsupported function (%s)", node.Name)
 }
 
 func (pc *parserContext) handleIdentifier(node *ant_ast.IdentifierNode) (*schemapb.FieldSchema, error) {
