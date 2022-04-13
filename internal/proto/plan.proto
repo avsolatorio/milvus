@@ -99,7 +99,7 @@ message BinaryArithOpExpr {
 
 message CompoundUnaryRangeExpr {
   BinaryArithOpExpr binary_arith_op_expr = 1;
-  ArithOpType op = 2;
+  OpType op = 2;
   GenericValue value = 3;
 }
 

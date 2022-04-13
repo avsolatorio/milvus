@@ -412,8 +412,44 @@ func (pc *parserContext) createCmpExpr(left, right ant_ast.Node, operator string
 	return expr, nil
 }
 
+func (pc *parserContext) createCompCmpExpr(left *ant_ast.FunctionNode, right *ant_ast.Node, operator string) (*planpb.Expr, error) {
+	if operator != "==" || operator != "!=" {
+		return nil, fmt.Errorf("operator(%s) not yet supported for function nodes", operator)
+	}
+
+	binArithOpExpr, err := pc.handleFunction(left)
+
+	if err != nil {
+		return nil, fmt.Errorf("createCompCmpExpr: %v", err)
+	}
+
+	op := getCompareOpType(operator, false)
+
+	expr := &planpb.Expr{
+		Expr: &planpb.Expr_CompoundUnaryRangeExpr{
+			CompoundUnaryRangeExpr: &planpb.CompoundUnaryRangeExpr{
+				 BinaryArithOpExpr: binArithOpExpr,
+				 Op:                op,
+				 Value:             right.Value,
+			},
+		},
+	}
+	return expr, nil
+}
+
 func (pc *parserContext) handleCmpExpr(node *ant_ast.BinaryNode) (*planpb.Expr, error) {
-	return pc.createCmpExpr(node.Left, node.Right, node.Operator)
+	leftNode, funcNodeLeft := node.Left.(*ant_ast.FunctionNode)
+	rightNode, funcNodeRight := node.Right.(*ant_ast.FunctionNode)
+
+	if funcNodeRight {
+		return nil, fmt.Errorf("right node as a function is not supported yet")
+	} else if !funcNodeLeft {
+		// Both left and right are not function nodes
+		return pc.createCmpExpr(node.Left, node.Right, node.Operator)
+	} else {
+		// Only the left node is a function node
+		return pc.createCompCmpExpr(node.Left, node.Right, node.Operator)
+	}
 }
 
 func (pc *parserContext) handleLogicalExpr(node *ant_ast.BinaryNode) (*planpb.Expr, error) {
@@ -657,7 +693,7 @@ func (pc *parserContext) handleLeafValue(nodeRaw *ant_ast.Node, dataType schemap
 	return gv, nil
 }
 
-func (pc *parserContext) handleFunction(node *ant_ast.FunctionNode) (*planpb.Expr, error) {
+func (pc *parserContext) handleFunction(node *ant_ast.FunctionNode) (*planpb.BinaryArithOpExpr, error) {
 	var functionArgs []*planpb.Expr
 	switch node.Name {
 	case
@@ -681,13 +717,13 @@ func (pc *parserContext) handleFunction(node *ant_ast.FunctionNode) (*planpb.Exp
 		if err != nil {
 			return nil, err
 		}
-		expr := &planpb.Expr{
-			Expr: &planpb.Expr_BinaryArithOpExpr{
+		arithOp := &planpb.BinaryArithOpExpr{
 				ColumnInfo: createColumnInfo(field),
 				Op:         op,
 				Value:      val,
-			},
 		}
+
+		return arithOp, nil
 	default:
 		return nil, fmt.Errorf("unsupported function (%s)", node.Name)
 }
