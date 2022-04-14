@@ -34,6 +34,24 @@ struct TermExprImpl : TermExpr {
 };
 
 template <typename T>
+struct BinaryArithOpExprImpl : BinaryArithOpExpr {
+    const T value_;
+
+    BinaryArithOpExprImpl(const FieldOffset field_offset, const ArithOpType arith_op_type, const DataType data_type, const T value)
+        : BinaryArithOpExpr(field_offset, arith_op_type, data_type), value_(value) {
+    }
+};
+
+template <typename T>
+struct CompoundUnaryRangeExprImpl : CompoundUnaryRangeExpr {
+    const T value_;
+
+    CompoundUnaryRangeExprImpl(const ExprPtr arith_expr, const OpType op_type, const DataType data_type, const T value)
+        : CompoundUnaryRangeExpr(arith_expr, op_type, data_type), value_(value) {
+    }
+};
+
+template <typename T>
 struct UnaryRangeExprImpl : UnaryRangeExpr {
     const T value_;
 
