@@ -121,36 +121,18 @@ enum class ArithOpType {
   Mod = 5,
 };
 
-struct BinaryArithOpExpr: Expr {
+struct BinaryArithOpUnaryRangeExpr : Expr {
     const FieldOffset field_offset_;
+    const DataType data_type_;
     const ArithOpType arith_op_type_;
-    const DataType data_type_;
-
- protected:
-    // prevent accidential instantiation
-    BinaryArithOpExpr() = delete;
-
-    BinaryArithOpExpr(const FieldOffset field_offset, const ArithOpType arith_op_type, const DataType data_type)
-        : field_offset_(field_offset), arith_op_type_(arith_op_type) data_type_(data_type) {
-    }
-
- public:
-    void
-    accept(ExprVisitor&) override;
-
-}
-
-struct CompoundUnaryRangeExpr : Expr {
-    const ExprPtr arith_expr_;
     const OpType op_type_;
-    const DataType data_type_;
 
  protected:
     // prevent accidential instantiation
-    CompoundUnaryRangeExpr() = delete;
+    BinaryArithOpUnaryRangeExpr() = delete;
 
-    CompoundUnaryRangeExpr(const ExprPtr arith_expr, const OpType op_type, const DataType data_type)
-        : arith_expr_(arith_expr), op_type_(op_type), data_type_(data_type) {
+    BinaryArithOpUnaryRangeExpr(const FieldOffset field_offset, const DataType data_type, const ArithOpType arith_op_type, const OpType op_type)
+        : field_offset_(field_offset), data_type_(data_type), arith_op_type_(arith_op_type), op_type_(op_type) {
     }
 
  public:
