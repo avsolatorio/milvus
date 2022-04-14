@@ -311,7 +311,7 @@ func getArithOpType(funcName string) (planpb.ArithOpType, error) {
 	case "mod":
 		op = planpb.ArithOpType_Mod
 	default:
-		return nil, fmt.Errorf("invalid arith op type: %s", funcName)
+		return op, fmt.Errorf("invalid arith op type: %s", funcName)
 	}
 	return op, nil
 }
@@ -432,7 +432,7 @@ func (pc *parserContext) createBinaryArithOpCmpExpr(left *ant_ast.FunctionNode, 
 				ArithOp:      binArithOp.ArithOp,
 				RightOperand: binArithOp.RightOperand,
 				Op:           op,
-				Value:        right.Value,
+				Value:        (*right).Value,
 			},
 		},
 	}
@@ -445,7 +445,7 @@ func (pc *parserContext) handleCmpExpr(node *ant_ast.BinaryNode) (*planpb.Expr, 
 
 func (pc *parserContext) handleBinaryArithCmpExpr(node *ant_ast.BinaryNode) (*planpb.Expr, error) {
 	leftNode, funcNodeLeft := node.Left.(*ant_ast.FunctionNode)
-	rightNode, funcNodeRight := node.Right.(*ant_ast.FunctionNode)
+	_, funcNodeRight := node.Right.(*ant_ast.FunctionNode)
 
 	if funcNodeRight {
 		return nil, fmt.Errorf("right node as a function is not supported yet")
@@ -454,7 +454,7 @@ func (pc *parserContext) handleBinaryArithCmpExpr(node *ant_ast.BinaryNode) (*pl
 		return pc.createCmpExpr(node.Left, node.Right, node.Operator)
 	} else {
 		// Only the left node is a function node
-		return pc.createBinaryArithOpCmpExpr(node.Left, node.Right, node.Operator)
+		return pc.createBinaryArithOpCmpExpr(leftNode, &node.Right, node.Operator)
 	}
 }
 
