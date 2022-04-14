@@ -427,7 +427,7 @@ func (pc *parserContext) createBinaryArithOpCmpExpr(left *ant_ast.FunctionNode, 
 		Expr: &planpb.Expr_BinaryArithOpUnaryRangeExpr{
 			BinaryArithOpUnaryRangeExpr: &planpb.BinaryArithOpUnaryRangeExpr{
 				ColumnInfo:   binArithOp.ColumnInfo,
-				Operator:     binArithOp.Operator,
+				ArithOp:      binArithOp.ArithOp,
 				RightOperand: binArithOp.RightOperand,
 				Op:           op,
 				Value:        right.Value,
@@ -716,7 +716,7 @@ func (pc *parserContext) handleFunction(node *ant_ast.FunctionNode) (*planpb.Bin
 		"div",
 		"mod":
 
-		operator := getArithOpType(node.Name)
+		arith_op := getArithOpType(node.Name)
 		idNode, ok := node.Arguments[0].(*ant_ast.IdentifierNode)
 		if !ok {
 			return nil, fmt.Errorf("left operand of the function must be an identifier")
@@ -732,7 +732,7 @@ func (pc *parserContext) handleFunction(node *ant_ast.FunctionNode) (*planpb.Bin
 		}
 		arithOp := &planpb.BinaryArithOp{
 			ColumnInfo:   createColumnInfo(field),
-			Operator:     operator,
+			ArithOp:      arith_op,
 			RightOperand: val,
 		}
 

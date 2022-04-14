@@ -93,13 +93,13 @@ message BinaryExpr {
 
 message BinaryArithOp {
   ColumnInfo column_info = 1;
-  ArithOpType operator = 2;
+  ArithOpType arith_op = 2;
   GenericValue right_operand = 3;
 }
 
 message BinaryArithOpUnaryRangeExpr {
   ColumnInfo column_info = 1;
-  ArithOpType operator = 2;
+  ArithOpType arith_op = 2;
   GenericValue right_operand = 3;
   OpType op = 4;
   GenericValue value = 5;

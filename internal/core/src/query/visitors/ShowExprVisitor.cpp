@@ -262,7 +262,7 @@ BinaryArithOpUnaryRangeExtract(const BinaryArithOpUnaryRangeExpr& expr_raw) {
     Json res{{"expr_type", "BinaryArithOpUnaryRange"},
              {"field_offset", expr->field_offset_.get()},
              {"data_type", datatype_name(expr->data_type_)},
-             {"arith_op_type", ArithOpType_Name(static_cast<ArithOpType>(expr->arith_op_type_))},
+             {"arith_op", ArithOpType_Name(static_cast<ArithOpType>(expr->arith_op_))},
              {"op", OpType_Name(static_cast<OpType>(expr->op_type_))},
              {"right_operand", expr->right_operand_}
              {"value", expr->value_}};
