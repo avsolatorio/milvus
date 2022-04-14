@@ -438,13 +438,17 @@ func (pc *parserContext) createBinaryArithOpCmpExpr(left *ant_ast.FunctionNode, 
 }
 
 func (pc *parserContext) handleCmpExpr(node *ant_ast.BinaryNode) (*planpb.Expr, error) {
+	return pc.createCmpExpr(node.Left, node.Right, node.Operator)
+}
+
+func (pc *parserContext) handleBinaryArithCmpExpr(node *ant_ast.BinaryNode) (*planpb.Expr, error) {
 	leftNode, funcNodeLeft := node.Left.(*ant_ast.FunctionNode)
 	rightNode, funcNodeRight := node.Right.(*ant_ast.FunctionNode)
 
 	if funcNodeRight {
 		return nil, fmt.Errorf("right node as a function is not supported yet")
 	} else if !funcNodeLeft {
-		// Both left and right are not function nodes
+		// Both left and right are not function nodes, pass to createCmpExpr
 		return pc.createCmpExpr(node.Left, node.Right, node.Operator)
 	} else {
 		// Only the left node is a function node
@@ -613,6 +617,16 @@ func (pc *parserContext) handleMultiCmpExpr(node *ant_ast.BinaryNode) (*planpb.E
 }
 
 func (pc *parserContext) handleBinaryExpr(node *ant_ast.BinaryNode) (*planpb.Expr, error) {
+	_, arithExpr := node.Left.(*ant_ast.FunctionNode)
+
+	if arithExpr {
+		switch node.Operator {
+		case "==", "!=":
+			return pc.handleBinaryArithCmpExpr(node)
+		}
+		return nil, fmt.Errorf("unsupported binary arithmetic operator %s", node.Operator)
+	}
+
 	switch node.Operator {
 	case "<", "<=", ">", ">=":
 		return pc.handleMultiCmpExpr(node)
