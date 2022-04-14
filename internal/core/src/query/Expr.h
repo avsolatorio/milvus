@@ -113,11 +113,11 @@ enum class OpType {
 };
 
 enum class ArithOpType {
-  Add = 1,
-  Sub = 2,
-  Mul = 3,
-  Div = 4,
-  Mod = 5,
+  Add = 0,
+  Sub = 1,
+  Mul = 2,
+  Div = 3,
+  Mod = 4,
 };
 
 static const std::map<std::string, ArithOpType> arith_op_mapping_ = {
