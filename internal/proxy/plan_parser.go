@@ -424,6 +424,7 @@ func (pc *parserContext) createBinaryArithOpCmpExpr(left *ant_ast.FunctionNode, 
 		return nil, fmt.Errorf("createBinaryArithOpCmpExpr: %v", err)
 	}
 	op := getCompareOpType(operator, false)
+	val, err := pc.handleLeafValue(right, binArithOp.DataType)
 
 	expr := &planpb.Expr{
 		Expr: &planpb.Expr_BinaryArithOpUnaryRangeExpr{
@@ -432,7 +433,7 @@ func (pc *parserContext) createBinaryArithOpCmpExpr(left *ant_ast.FunctionNode, 
 				ArithOp:      binArithOp.ArithOp,
 				RightOperand: binArithOp.RightOperand,
 				Op:           op,
-				Value:        (*right).Value,
+				Value:        val,
 			},
 		},
 	}
