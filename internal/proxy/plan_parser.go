@@ -309,9 +309,9 @@ func getArithOpType(funcName string) (op planpb.ArithOpType) {
 	case "mod":
 		op = planpb.ArithOpType_Mod
 	default:
-		op = planpb.ArithOpType_Invalid
+		return nil, fmt.Errorf("invalid arith op type: %s", funcName)
 	}
-	return op
+	return op, nil
 }
 
 func parseBoolNode(nodeRaw *ant_ast.Node) *ant_ast.BoolNode {
@@ -710,13 +710,16 @@ func (pc *parserContext) handleLeafValue(nodeRaw *ant_ast.Node, dataType schemap
 func (pc *parserContext) handleFunction(node *ant_ast.FunctionNode) (*planpb.BinaryArithOp, error) {
 	switch node.Name {
 	case
-		"sum",
+		"add",
 		"sub",
 		"mul",
 		"div",
 		"mod":
 
-		arith_op := getArithOpType(node.Name)
+		arith_op, err := getArithOpType(node.Name)
+		if err != nil {
+			return nil, err
+		}
 		idNode, ok := node.Arguments[0].(*ant_ast.IdentifierNode)
 		if !ok {
 			return nil, fmt.Errorf("left operand of the function must be an identifier")
