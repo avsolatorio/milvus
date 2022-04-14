@@ -111,7 +111,7 @@ ExtractBinaryArithOpUnaryRangeExprImpl(FieldOffset field_offset, DataType data_t
         field_offset, data_type,
         static_cast<ArithOpType>(expr_proto.arith_op()),
         getValue(expr_proto.right_operand()),
-        static_cast<OpType>(expr_proto.op())
+        static_cast<OpType>(expr_proto.op()),
         getValue(expr_proto.value())
     );
 }

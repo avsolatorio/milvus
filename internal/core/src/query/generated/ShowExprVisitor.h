@@ -37,6 +37,9 @@ class ShowExprVisitor : public ExprVisitor {
     void
     visit(CompareExpr& expr) override;
 
+    void
+    visit(BinaryArithOpUnaryRangeExpr& expr) override;
+
  public:
     Json
     call_child(Expr& expr) {
