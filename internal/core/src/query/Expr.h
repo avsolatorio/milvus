@@ -113,7 +113,6 @@ enum class OpType {
 };
 
 enum class ArithOpType {
-  Invalid = 0,
   Add = 1,
   Sub = 2,
   Mul = 3,

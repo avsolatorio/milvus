@@ -15,7 +15,6 @@ enum OpType {
 };
 
 enum ArithOpType {
-  Invalid = 0;
   Add = 1;
   Sub = 2;
   Mul = 3;
