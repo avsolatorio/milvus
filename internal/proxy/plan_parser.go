@@ -729,7 +729,7 @@ func (pc *parserContext) handleFunction(node *ant_ast.FunctionNode) (*planpb.Bin
 			return nil, err
 		}
 		valueNode := node.Arguments[1]
-		val, err := pc.handleLeafValue(valueNode, field.DataType)
+		val, err := pc.handleLeafValue(&valueNode, field.DataType)
 		if err != nil {
 			return nil, err
 		}
@@ -742,6 +742,7 @@ func (pc *parserContext) handleFunction(node *ant_ast.FunctionNode) (*planpb.Bin
 		return arithOp, nil
 	default:
 		return nil, fmt.Errorf("unsupported function (%s)", node.Name)
+	}
 }
 
 func (pc *parserContext) handleIdentifier(node *ant_ast.IdentifierNode) (*schemapb.FieldSchema, error) {
