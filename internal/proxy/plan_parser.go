@@ -296,7 +296,7 @@ func getLogicalOpType(opStr string) planpb.BinaryExpr_BinaryOp {
 	}
 }
 
-func getArithOpType(funcName string) (op planpb.ArithOpType) {
+func getArithOpType(funcName string) (op planpb.ArithOpType, error) {
 	switch funcName {
 	case "add":
 		op = planpb.ArithOpType_Add
