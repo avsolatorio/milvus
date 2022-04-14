@@ -112,38 +112,38 @@ enum class OpType {
     NotEqual = 6,
 };
 
-enum class ArithOpType {
-  Add = 0,
-  Sub = 1,
-  Mul = 2,
-  Div = 3,
-  Mod = 4,
-};
+// enum class ArithOpType {
+//   Add = 0,
+//   Sub = 1,
+//   Mul = 2,
+//   Div = 3,
+//   Mod = 4,
+// };
 
-static const std::map<std::string, ArithOpType> arith_op_mapping_ = {
-    // arith_op_name -> arith_op
-    {"add", ArithOpType::Add},    {"div", ArithOpType::Div},
-    {"mul", ArithOpType::Mul},    {"mod", ArithOpType::Mod},
-    {"sub", ArithOpType::Sub},
-};
+// static const std::map<std::string, ArithOpType> arith_op_mapping_ = {
+//     // arith_op_name -> arith_op
+//     {"add", ArithOpType::Add},    {"div", ArithOpType::Div},
+//     {"mul", ArithOpType::Mul},    {"mod", ArithOpType::Mod},
+//     {"sub", ArithOpType::Sub},
+// };
 
-struct BinaryArithOpUnaryRangeExpr : Expr {
-    const FieldOffset field_offset_;
-    const DataType data_type_;
-    const OpType op_type_;
+// struct BinaryArithOpUnaryRangeExpr : Expr {
+//     const FieldOffset field_offset_;
+//     const DataType data_type_;
+//     const OpType op_type_;
 
- protected:
-    // prevent accidential instantiation
-    BinaryArithOpUnaryRangeExpr() = delete;
+//  protected:
+//     // prevent accidential instantiation
+//     BinaryArithOpUnaryRangeExpr() = delete;
 
-    BinaryArithOpUnaryRangeExpr(const FieldOffset field_offset, const DataType data_type, const OpType op_type)
-        : field_offset_(field_offset), data_type_(data_type), op_type_(op_type) {
-    }
+//     BinaryArithOpUnaryRangeExpr(const FieldOffset field_offset, const DataType data_type, const OpType op_type)
+//         : field_offset_(field_offset), data_type_(data_type), op_type_(op_type) {
+//     }
 
- public:
-    void
-    accept(ExprVisitor&) override;
-};
+//  public:
+//     void
+//     accept(ExprVisitor&) override;
+// };
 
 static const std::map<std::string, OpType> mapping_ = {
     // op_name -> op

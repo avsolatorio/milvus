@@ -222,89 +222,89 @@ ExecExprVisitor::ExecUnaryRangeVisitorDispatcher(UnaryRangeExpr& expr_raw) -> Bi
 }
 #pragma clang diagnostic pop
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "Simplify"
-template <typename T>
-auto
-ExecExprVisitor::ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnaryRangeExpr& expr_raw) -> BitsetType {
-    auto& expr = static_cast<BinaryArithOpUnaryRangeExprImpl<T>&>(expr_raw);
-    using Index = scalar::ScalarIndex<T>;
-    auto arith_op = expr.arith_op_;
-    auto right_operand = expr.right_operand_;
-    auto op = expr.op_type_;
-    auto val = expr.value_;
+// #pragma clang diagnostic push
+// #pragma ide diagnostic ignored "Simplify"
+// template <typename T>
+// auto
+// ExecExprVisitor::ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnaryRangeExpr& expr_raw) -> BitsetType {
+//     auto& expr = static_cast<BinaryArithOpUnaryRangeExprImpl<T>&>(expr_raw);
+//     using Index = scalar::ScalarIndex<T>;
+//     auto arith_op = expr.arith_op_;
+//     auto right_operand = expr.right_operand_;
+//     auto op = expr.op_type_;
+//     auto val = expr.value_;
 
-    switch (op) {
-        case OpType::Equal: {
-            switch (arith_op) {
-                case ArithOpType::Add: {
-                    auto index_func = [val](Index* index) { return index->In(1, &val); };
-                    auto elem_func = [val](T x) { return ((x + right_operand) == val); };
-                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
-                }
-                case ArithOpType::Sub: {
-                    auto index_func = [val](Index* index) { return index->In(1, &val); };
-                    auto elem_func = [val](T x) { return ((x - right_operand) == val); };
-                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
-                }
-                case ArithOpType::Mul: {
-                    auto index_func = [val](Index* index) { return index->In(1, &val); };
-                    auto elem_func = [val](T x) { return ((x * right_operand) == val); };
-                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
-                }
-                case ArithOpType::Div: {
-                    auto index_func = [val](Index* index) { return index->In(1, &val); };
-                    auto elem_func = [val](T x) { return ((x / right_operand) == val); };
-                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
-                }
-                case ArithOpType::Mod: {
-                    auto index_func = [val](Index* index) { return index->In(1, &val); };
-                    auto elem_func = [val](T x) { return ((x % right_operand) == val); };
-                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
-                }
-                default: {
-                    PanicInfo("unsupported arithmetic operation");
-                }
-            }
-        }
-        case OpType::NotEqual: {
-            switch (arith_op) {
-                case ArithOpType::Add: {
-                    auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
-                    auto elem_func = [val](T x) { return ((x + right_operand) != val); };
-                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
-                }
-                case ArithOpType::Sub: {
-                    auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
-                    auto elem_func = [val](T x) { return ((x - right_operand) != val); };
-                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
-                }
-                case ArithOpType::Mul: {
-                    auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
-                    auto elem_func = [val](T x) { return ((x * right_operand) != val); };
-                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
-                }
-                case ArithOpType::Div: {
-                    auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
-                    auto elem_func = [val](T x) { return ((x / right_operand) != val); };
-                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
-                }
-                case ArithOpType::Mod: {
-                    auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
-                    auto elem_func = [val](T x) { return ((x % right_operand) != val); };
-                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
-                }
-                default: {
-                    PanicInfo("unsupported arithmetic operation");
-                }
-            }
-        }
-        default: {
-            PanicInfo("unsupported range node with arithmetic operation");
-        }
-    }
-}
-#pragma clang diagnostic pop
+//     switch (op) {
+//         case OpType::Equal: {
+//             switch (arith_op) {
+//                 case ArithOpType::Add: {
+//                     auto index_func = [val](Index* index) { return index->In(1, &val); };
+//                     auto elem_func = [val](T x) { return ((x + right_operand) == val); };
+//                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+//                 }
+//                 case ArithOpType::Sub: {
+//                     auto index_func = [val](Index* index) { return index->In(1, &val); };
+//                     auto elem_func = [val](T x) { return ((x - right_operand) == val); };
+//                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+//                 }
+//                 case ArithOpType::Mul: {
+//                     auto index_func = [val](Index* index) { return index->In(1, &val); };
+//                     auto elem_func = [val](T x) { return ((x * right_operand) == val); };
+//                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+//                 }
+//                 case ArithOpType::Div: {
+//                     auto index_func = [val](Index* index) { return index->In(1, &val); };
+//                     auto elem_func = [val](T x) { return ((x / right_operand) == val); };
+//                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+//                 }
+//                 case ArithOpType::Mod: {
+//                     auto index_func = [val](Index* index) { return index->In(1, &val); };
+//                     auto elem_func = [val](T x) { return ((x % right_operand) == val); };
+//                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+//                 }
+//                 default: {
+//                     PanicInfo("unsupported arithmetic operation");
+//                 }
+//             }
+//         }
+//         case OpType::NotEqual: {
+//             switch (arith_op) {
+//                 case ArithOpType::Add: {
+//                     auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
+//                     auto elem_func = [val](T x) { return ((x + right_operand) != val); };
+//                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+//                 }
+//                 case ArithOpType::Sub: {
+//                     auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
+//                     auto elem_func = [val](T x) { return ((x - right_operand) != val); };
+//                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+//                 }
+//                 case ArithOpType::Mul: {
+//                     auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
+//                     auto elem_func = [val](T x) { return ((x * right_operand) != val); };
+//                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+//                 }
+//                 case ArithOpType::Div: {
+//                     auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
+//                     auto elem_func = [val](T x) { return ((x / right_operand) != val); };
+//                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+//                 }
+//                 case ArithOpType::Mod: {
+//                     auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
+//                     auto elem_func = [val](T x) { return ((x % right_operand) != val); };
+//                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+//                 }
+//                 default: {
+//                     PanicInfo("unsupported arithmetic operation");
+//                 }
+//             }
+//         }
+//         default: {
+//             PanicInfo("unsupported range node with arithmetic operation");
+//         }
+//     }
+// }
+// #pragma clang diagnostic pop
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "Simplify"
