@@ -412,25 +412,25 @@ func (pc *parserContext) createCmpExpr(left, right ant_ast.Node, operator string
 	return expr, nil
 }
 
-func (pc *parserContext) createCompCmpExpr(left *ant_ast.FunctionNode, right *ant_ast.Node, operator string) (*planpb.Expr, error) {
+func (pc *parserContext) createBinaryArithOpCmpExpr(left *ant_ast.FunctionNode, right *ant_ast.Node, operator string) (*planpb.Expr, error) {
 	if operator != "==" || operator != "!=" {
 		return nil, fmt.Errorf("operator(%s) not yet supported for function nodes", operator)
 	}
 
-	binArithOpExpr, err := pc.handleFunction(left)
-
+	binArithOp, err := pc.handleFunction(left)
 	if err != nil {
-		return nil, fmt.Errorf("createCompCmpExpr: %v", err)
+		return nil, fmt.Errorf("createBinaryArithOpCmpExpr: %v", err)
 	}
-
 	op := getCompareOpType(operator, false)
 
 	expr := &planpb.Expr{
-		Expr: &planpb.Expr_CompoundUnaryRangeExpr{
-			CompoundUnaryRangeExpr: &planpb.CompoundUnaryRangeExpr{
-				 BinaryArithOpExpr: binArithOpExpr,
-				 Op:                op,
-				 Value:             right.Value,
+		Expr: &planpb.Expr_BinaryArithOpUnaryRangeExpr{
+			BinaryArithOpUnaryRangeExpr: &planpb.BinaryArithOpUnaryRangeExpr{
+				ColumnInfo:   binArithOp.ColumnInfo,
+				Operator:     binArithOp.Operator,
+				RightOperand: binArithOp.RightOperand,
+				Op:           op,
+				Value:        right.Value,
 			},
 		},
 	}
@@ -448,7 +448,7 @@ func (pc *parserContext) handleCmpExpr(node *ant_ast.BinaryNode) (*planpb.Expr, 
 		return pc.createCmpExpr(node.Left, node.Right, node.Operator)
 	} else {
 		// Only the left node is a function node
-		return pc.createCompCmpExpr(node.Left, node.Right, node.Operator)
+		return pc.createBinaryArithOpCmpExpr(node.Left, node.Right, node.Operator)
 	}
 }
 
@@ -693,8 +693,7 @@ func (pc *parserContext) handleLeafValue(nodeRaw *ant_ast.Node, dataType schemap
 	return gv, nil
 }
 
-func (pc *parserContext) handleFunction(node *ant_ast.FunctionNode) (*planpb.BinaryArithOpExpr, error) {
-	var functionArgs []*planpb.Expr
+func (pc *parserContext) handleFunction(node *ant_ast.FunctionNode) (*planpb.BinaryArithOp, error) {
 	switch node.Name {
 	case
 		"sum",
@@ -703,7 +702,7 @@ func (pc *parserContext) handleFunction(node *ant_ast.FunctionNode) (*planpb.Bin
 		"div",
 		"mod":
 
-		op := getArithOpType(node.Name)
+		operator := getArithOpType(node.Name)
 		idNode, ok := node.Arguments[0].(*ant_ast.IdentifierNode)
 		if !ok {
 			return nil, fmt.Errorf("left operand of the function must be an identifier")
@@ -717,10 +716,10 @@ func (pc *parserContext) handleFunction(node *ant_ast.FunctionNode) (*planpb.Bin
 		if err != nil {
 			return nil, err
 		}
-		arithOp := &planpb.BinaryArithOpExpr{
-				ColumnInfo: createColumnInfo(field),
-				Op:         op,
-				Value:      val,
+		arithOp := &planpb.BinaryArithOp{
+			ColumnInfo:   createColumnInfo(field),
+			Operator:     operator,
+			RightOperand: val,
 		}
 
 		return arithOp, nil

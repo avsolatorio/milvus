@@ -91,16 +91,18 @@ message BinaryExpr {
   Expr right = 3;
 }
 
-message BinaryArithOpExpr {
+message BinaryArithOp {
   ColumnInfo column_info = 1;
-  ArithOpType op = 2;
-  GenericValue value = 3;
+  ArithOpType operator = 2;
+  GenericValue right_operand = 3;
 }
 
-message CompoundUnaryRangeExpr {
-  BinaryArithOpExpr binary_arith_op_expr = 1;
-  OpType op = 2;
-  GenericValue value = 3;
+message BinaryArithOpUnaryRangeExpr {
+  ColumnInfo column_info = 1;
+  ArithOpType operator = 2;
+  GenericValue right_operand = 3;
+  OpType op = 4;
+  GenericValue value = 5;
 }
 
 message Expr {
@@ -111,8 +113,7 @@ message Expr {
     CompareExpr compare_expr = 4;
     UnaryRangeExpr unary_range_expr = 5;
     BinaryRangeExpr binary_range_expr = 6;
-    BinaryArithOpExpr binary_arith_op_expr = 7;
-    CompoundUnaryRangeExpr compound_unary_range_expr = 8;
+    BinaryArithOpUnaryRangeExpr binary_arith_op_unary_range_expr = 7;
   };
 }
 
