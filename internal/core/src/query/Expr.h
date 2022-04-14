@@ -121,18 +121,24 @@ enum class ArithOpType {
   Mod = 5,
 };
 
+static const std::map<std::string, ArithOpType> arith_op_mapping_ = {
+    // arith_op_name -> arith_op
+    {"add", ArithOpType::Add},    {"div", ArithOpType::Div},
+    {"mul", ArithOpType::Mul},    {"mod", ArithOpType::Mod},
+    {"sub", ArithOpType::Sub},
+};
+
 struct BinaryArithOpUnaryRangeExpr : Expr {
     const FieldOffset field_offset_;
     const DataType data_type_;
-    const ArithOpType arith_op_type_;
     const OpType op_type_;
 
  protected:
     // prevent accidential instantiation
     BinaryArithOpUnaryRangeExpr() = delete;
 
-    BinaryArithOpUnaryRangeExpr(const FieldOffset field_offset, const DataType data_type, const ArithOpType arith_op_type, const OpType op_type)
-        : field_offset_(field_offset), data_type_(data_type), arith_op_type_(arith_op_type), op_type_(op_type) {
+    BinaryArithOpUnaryRangeExpr(const FieldOffset field_offset, const DataType data_type, const OpType op_type)
+        : field_offset_(field_offset), data_type_(data_type), op_type_(op_type) {
     }
 
  public:
