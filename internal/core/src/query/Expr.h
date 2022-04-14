@@ -112,6 +112,52 @@ enum class OpType {
     NotEqual = 6,
 };
 
+enum class ArithOpType {
+  Invalid = 0,
+  Add = 1,
+  Sub = 2,
+  Mul = 3,
+  Div = 4,
+  Mod = 5,
+};
+
+struct BinaryArithOpExpr: Expr {
+    const FieldOffset field_offset_;
+    const ArithOpType arith_op_type_;
+    const DataType data_type_;
+
+ protected:
+    // prevent accidential instantiation
+    BinaryArithOpExpr() = delete;
+
+    BinaryArithOpExpr(const FieldOffset field_offset, const ArithOpType arith_op_type, const DataType data_type)
+        : field_offset_(field_offset), arith_op_type_(arith_op_type) data_type_(data_type) {
+    }
+
+ public:
+    void
+    accept(ExprVisitor&) override;
+
+}
+
+struct CompoundUnaryRangeExpr : Expr {
+    const ExprPtr arith_expr_;
+    const OpType op_type_;
+    const DataType data_type_;
+
+ protected:
+    // prevent accidential instantiation
+    CompoundUnaryRangeExpr() = delete;
+
+    CompoundUnaryRangeExpr(const ExprPtr arith_expr, const OpType op_type, const DataType data_type)
+        : arith_expr_(arith_expr), op_type_(op_type), data_type_(data_type) {
+    }
+
+ public:
+    void
+    accept(ExprVisitor&) override;
+};
+
 static const std::map<std::string, OpType> mapping_ = {
     // op_name -> op
     {"lt", OpType::LessThan},    {"le", OpType::LessEqual},    {"lte", OpType::LessEqual},
