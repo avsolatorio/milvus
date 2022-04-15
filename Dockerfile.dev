@@ -3,5 +3,6 @@ FROM ubuntu:18.04
 WORKDIR /milvus
 
 COPY scripts/install_deps.sh .
+RUN ./install_deps.sh
 
-RUN tail -f /dev/null
+CMD tail -f /dev/null
