@@ -33,6 +33,9 @@ class ExecExprVisitor : public ExprVisitor {
     visit(TermExpr& expr) override;
 
     void
+    visit(BinaryArithOpUnaryRangeExpr& expr) override;
+
+    void
     visit(UnaryRangeExpr& expr) override;
 
     void
@@ -81,7 +84,6 @@ class ExecExprVisitor : public ExprVisitor {
     const segcore::SegmentInternalInterface& segment_;
     Timestamp timestamp_;
     int64_t row_count_;
-
     BitsetTypeOpt bitset_opt_;
 };
 }  // namespace milvus::query
