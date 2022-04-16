@@ -89,32 +89,32 @@ ExtractBinaryRangeExprImpl(FieldOffset field_offset, DataType data_type, const p
                                                     getValue(expr_proto.upper_value()));
 }
 
-// template <typename T>
-// std::unique_ptr<BinaryArithOpUnaryRangeExprImpl<T>>
-// ExtractBinaryArithOpUnaryRangeExprImpl(FieldOffset field_offset, DataType data_type, const planpb::BinaryArithOpUnaryRangeExpr& expr_proto) {
-//     static_assert(std::is_fundamental_v<T>);
-//     auto getValue = [&](const auto& value_proto) -> T {
-//         if constexpr (std::is_same_v<T, bool>) {
-//             Assert(value_proto.val_case() == planpb::GenericValue::kBoolVal);
-//             return static_cast<T>(value_proto.bool_val());
-//         } else if constexpr (std::is_integral_v<T>) {
-//             Assert(value_proto.val_case() == planpb::GenericValue::kInt64Val);
-//             return static_cast<T>(value_proto.int64_val());
-//         } else if constexpr (std::is_floating_point_v<T>) {
-//             Assert(value_proto.val_case() == planpb::GenericValue::kFloatVal);
-//             return static_cast<T>(value_proto.float_val());
-//         } else {
-//             static_assert(always_false<T>);
-//         }
-//     };
-//     return std::make_unique<BinaryArithOpUnaryRangeExprImpl<T>>(
-//         field_offset, data_type,
-//         static_cast<ArithOpType>(expr_proto.arith_op()),
-//         getValue(expr_proto.right_operand()),
-//         static_cast<OpType>(expr_proto.op()),
-//         getValue(expr_proto.value())
-//     );
-// }
+template <typename T>
+std::unique_ptr<BinaryArithOpUnaryRangeExprImpl<T>>
+ExtractBinaryArithOpUnaryRangeExprImpl(FieldOffset field_offset, DataType data_type, const planpb::BinaryArithOpUnaryRangeExpr& expr_proto) {
+    static_assert(std::is_fundamental_v<T>);
+    auto getValue = [&](const auto& value_proto) -> T {
+        if constexpr (std::is_same_v<T, bool>) {
+            Assert(value_proto.val_case() == planpb::GenericValue::kBoolVal);
+            return static_cast<T>(value_proto.bool_val());
+        } else if constexpr (std::is_integral_v<T>) {
+            Assert(value_proto.val_case() == planpb::GenericValue::kInt64Val);
+            return static_cast<T>(value_proto.int64_val());
+        } else if constexpr (std::is_floating_point_v<T>) {
+            Assert(value_proto.val_case() == planpb::GenericValue::kFloatVal);
+            return static_cast<T>(value_proto.float_val());
+        } else {
+            static_assert(always_false<T>);
+        }
+    };
+    return std::make_unique<BinaryArithOpUnaryRangeExprImpl<T>>(
+        field_offset, data_type,
+        static_cast<ArithOpType>(expr_proto.arith_op()),
+        getValue(expr_proto.right_operand()),
+        static_cast<OpType>(expr_proto.op()),
+        getValue(expr_proto.value())
+    );
+}
 
 std::unique_ptr<VectorPlanNode>
 ProtoParser::PlanNodeFromProto(const planpb::PlanNode& plan_node_proto) {
@@ -364,44 +364,44 @@ ProtoParser::ParseBinaryExpr(const proto::plan::BinaryExpr& expr_pb) {
     return std::make_unique<LogicalBinaryExpr>(op, left_expr, right_expr);
 }
 
-// ExprPtr
-// ProtoParser::ParseBinaryArithOpUnaryRangeExpr(const proto::plan::BinaryArithOpUnaryRangeExpr& expr_pb) {
-//     auto& column_info = expr_pb.column_info();
-//     auto field_id = FieldId(column_info.field_id());
-//     auto field_offset = schema.get_offset(field_id);
-//     auto data_type = schema[field_offset].get_data_type();
-//     Assert(data_type == static_cast<DataType>(column_info.data_type()));
+ExprPtr
+ProtoParser::ParseBinaryArithOpUnaryRangeExpr(const proto::plan::BinaryArithOpUnaryRangeExpr& expr_pb) {
+    auto& column_info = expr_pb.column_info();
+    auto field_id = FieldId(column_info.field_id());
+    auto field_offset = schema.get_offset(field_id);
+    auto data_type = schema[field_offset].get_data_type();
+    Assert(data_type == static_cast<DataType>(column_info.data_type()));
 
-//     auto result = [&]() -> ExprPtr {
-//         switch (data_type) {
-//             case DataType::BOOL: {
-//                 return ExtractBinaryArithOpUnaryRangeExprImpl<bool>(field_offset, data_type, expr_pb);
-//             }
-//             case DataType::INT8: {
-//                 return ExtractBinaryArithOpUnaryRangeExprImpl<int8_t>(field_offset, data_type, expr_pb);
-//             }
-//             case DataType::INT16: {
-//                 return ExtractBinaryArithOpUnaryRangeExprImpl<int16_t>(field_offset, data_type, expr_pb);
-//             }
-//             case DataType::INT32: {
-//                 return ExtractBinaryArithOpUnaryRangeExprImpl<int32_t>(field_offset, data_type, expr_pb);
-//             }
-//             case DataType::INT64: {
-//                 return ExtractBinaryArithOpUnaryRangeExprImpl<int64_t>(field_offset, data_type, expr_pb);
-//             }
-//             case DataType::FLOAT: {
-//                 return ExtractBinaryArithOpUnaryRangeExprImpl<float>(field_offset, data_type, expr_pb);
-//             }
-//             case DataType::DOUBLE: {
-//                 return ExtractBinaryArithOpUnaryRangeExprImpl<double>(field_offset, data_type, expr_pb);
-//             }
-//             default: {
-//                 PanicInfo("unsupported data type");
-//             }
-//         }
-//     }();
-//     return result;
-// }
+    auto result = [&]() -> ExprPtr {
+        switch (data_type) {
+            case DataType::BOOL: {
+                return ExtractBinaryArithOpUnaryRangeExprImpl<bool>(field_offset, data_type, expr_pb);
+            }
+            case DataType::INT8: {
+                return ExtractBinaryArithOpUnaryRangeExprImpl<int8_t>(field_offset, data_type, expr_pb);
+            }
+            case DataType::INT16: {
+                return ExtractBinaryArithOpUnaryRangeExprImpl<int16_t>(field_offset, data_type, expr_pb);
+            }
+            case DataType::INT32: {
+                return ExtractBinaryArithOpUnaryRangeExprImpl<int32_t>(field_offset, data_type, expr_pb);
+            }
+            case DataType::INT64: {
+                return ExtractBinaryArithOpUnaryRangeExprImpl<int64_t>(field_offset, data_type, expr_pb);
+            }
+            case DataType::FLOAT: {
+                return ExtractBinaryArithOpUnaryRangeExprImpl<float>(field_offset, data_type, expr_pb);
+            }
+            case DataType::DOUBLE: {
+                return ExtractBinaryArithOpUnaryRangeExprImpl<double>(field_offset, data_type, expr_pb);
+            }
+            default: {
+                PanicInfo("unsupported data type");
+            }
+        }
+    }();
+    return result;
+}
 
 ExprPtr
 ProtoParser::ParseExpr(const proto::plan::Expr& expr_pb) {
@@ -425,9 +425,9 @@ ProtoParser::ParseExpr(const proto::plan::Expr& expr_pb) {
         case ppe::kCompareExpr: {
             return ParseCompareExpr(expr_pb.compare_expr());
         }
-        // case ppe::kBinaryArithOpUnaryRangeExpr: {
-        //     return ParseBinaryArithOpUnaryRangeExpr(expr_pb.binary_arith_op_unary_range_expr());
-        // }
+        case ppe::kBinaryArithOpUnaryRangeExpr: {
+            return ParseBinaryArithOpUnaryRangeExpr(expr_pb.binary_arith_op_unary_range_expr());
+        }
         default:
             PanicInfo("unsupported expr proto node");
     }

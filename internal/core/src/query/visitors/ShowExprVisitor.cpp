@@ -248,56 +248,56 @@ ShowExprVisitor::visit(CompareExpr& expr) {
     json_opt_ = res;
 }
 
-// template <typename T>
-// static Json
-// BinaryArithOpUnaryRangeExtract(const BinaryArithOpUnaryRangeExpr& expr_raw) {
-//     using proto::plan::OpType;
-//     using proto::plan::OpType_Name;
-//     using proto::plan::ArithOpType;
-//     using proto::plan::ArithOpType_Name;
+template <typename T>
+static Json
+BinaryArithOpUnaryRangeExtract(const BinaryArithOpUnaryRangeExpr& expr_raw) {
+    using proto::plan::OpType;
+    using proto::plan::OpType_Name;
+    using proto::plan::ArithOpType;
+    using proto::plan::ArithOpType_Name;
 
-//     auto expr = dynamic_cast<const BinaryArithOpUnaryRangeExprImpl<T>*>(&expr_raw);
-//     AssertInfo(expr, "[ShowExprVisitor]BinaryArithOpUnaryRangeExpr cast to BinaryArithOpUnaryRangeExprImpl failed");
+    auto expr = dynamic_cast<const BinaryArithOpUnaryRangeExprImpl<T>*>(&expr_raw);
+    AssertInfo(expr, "[ShowExprVisitor]BinaryArithOpUnaryRangeExpr cast to BinaryArithOpUnaryRangeExprImpl failed");
 
-//     Json res{{"expr_type", "BinaryArithOpUnaryRange"},
-//              {"field_offset", expr->field_offset_.get()},
-//              {"data_type", datatype_name(expr->data_type_)},
-//              {"arith_op", ArithOpType_Name(static_cast<ArithOpType>(expr->arith_op_))},
-//              {"right_operand", expr->right_operand_},
-//              {"op", OpType_Name(static_cast<OpType>(expr->op_type_))},
-//              {"value", expr->value_}};
-//     return res;
-// }
+    Json res{{"expr_type", "BinaryArithOpUnaryRange"},
+             {"field_offset", expr->field_offset_.get()},
+             {"data_type", datatype_name(expr->data_type_)},
+             {"arith_op", ArithOpType_Name(static_cast<ArithOpType>(expr->arith_op_))},
+             {"right_operand", expr->right_operand_},
+             {"op", OpType_Name(static_cast<OpType>(expr->op_type_))},
+             {"value", expr->value_}};
+    return res;
+}
 
-// void
-// ShowExprVisitor::visit(BinaryArithOpUnaryRangeExpr& expr) {
-//     AssertInfo(!json_opt_.has_value(), "[ShowExprVisitor]Ret json already has value before visit");
-//     AssertInfo(datatype_is_vector(expr.data_type_) == false, "[ShowExprVisitor]Data type of expr isn't vector type");
-//     switch (expr.data_type_) {
-//         case DataType::BOOL:
-//             json_opt_ = BinaryArithOpUnaryRangeExtract<bool>(expr);
-//             return;
-//         case DataType::INT8:
-//             json_opt_ = BinaryArithOpUnaryRangeExtract<int8_t>(expr);
-//             return;
-//         case DataType::INT16:
-//             json_opt_ = BinaryArithOpUnaryRangeExtract<int16_t>(expr);
-//             return;
-//         case DataType::INT32:
-//             json_opt_ = BinaryArithOpUnaryRangeExtract<int32_t>(expr);
-//             return;
-//         case DataType::INT64:
-//             json_opt_ = BinaryArithOpUnaryRangeExtract<int64_t>(expr);
-//             return;
-//         case DataType::DOUBLE:
-//             json_opt_ = BinaryArithOpUnaryRangeExtract<double>(expr);
-//             return;
-//         case DataType::FLOAT:
-//             json_opt_ = BinaryArithOpUnaryRangeExtract<float>(expr);
-//             return;
-//         default:
-//             PanicInfo("unsupported type");
-//     }
-// }
+void
+ShowExprVisitor::visit(BinaryArithOpUnaryRangeExpr& expr) {
+    AssertInfo(!json_opt_.has_value(), "[ShowExprVisitor]Ret json already has value before visit");
+    AssertInfo(datatype_is_vector(expr.data_type_) == false, "[ShowExprVisitor]Data type of expr isn't vector type");
+    switch (expr.data_type_) {
+        case DataType::BOOL:
+            json_opt_ = BinaryArithOpUnaryRangeExtract<bool>(expr);
+            return;
+        case DataType::INT8:
+            json_opt_ = BinaryArithOpUnaryRangeExtract<int8_t>(expr);
+            return;
+        case DataType::INT16:
+            json_opt_ = BinaryArithOpUnaryRangeExtract<int16_t>(expr);
+            return;
+        case DataType::INT32:
+            json_opt_ = BinaryArithOpUnaryRangeExtract<int32_t>(expr);
+            return;
+        case DataType::INT64:
+            json_opt_ = BinaryArithOpUnaryRangeExtract<int64_t>(expr);
+            return;
+        case DataType::DOUBLE:
+            json_opt_ = BinaryArithOpUnaryRangeExtract<double>(expr);
+            return;
+        case DataType::FLOAT:
+            json_opt_ = BinaryArithOpUnaryRangeExtract<float>(expr);
+            return;
+        default:
+            PanicInfo("unsupported type");
+    }
+}
 
 }  // namespace milvus::query

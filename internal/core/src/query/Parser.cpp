@@ -244,67 +244,67 @@ Parser::ParseRangeNodeImpl(const FieldName& field_name, const Json& body) {
         auto op_name = boost::algorithm::to_lower_copy(std::string(item.key()));
         AssertInfo(mapping_.count(op_name), "op(" + op_name + ") not found");
 
-        // // This is an expression with an arithmetic operation
-        // if (item.value().is_object()) {
-        //     /* // This is the expected DSL expression
-        //     {
-        //         range: {
-        //             field_name: {
-        //                 op: {
-        //                     // arith_op: operator,
-        //                     // right_operand: operand,
-        //                     // value: value
-        //                     arith_op: {
-        //                         right_operand: operand,
-        //                         value: value
-        //                     },
-        //                 }
-        //             }
-        //         }
-        //     }
-        //     EXAMPLE:
-        //     {
-        //         range: {
-        //             field_name: {
-        //                 "EQ": {
-        //                     "ADD": {
-        //                         right_operand: 10,
-        //                         value: 25
-        //                     },
-        //                 }
-        //             }
-        //         }
-        //     }
-        //     */
+        // This is an expression with an arithmetic operation
+        if (item.value().is_object()) {
+            /* // This is the expected DSL expression
+            {
+                range: {
+                    field_name: {
+                        op: {
+                            // arith_op: operator,
+                            // right_operand: operand,
+                            // value: value
+                            arith_op: {
+                                right_operand: operand,
+                                value: value
+                            },
+                        }
+                    }
+                }
+            }
+            EXAMPLE:
+            {
+                range: {
+                    field_name: {
+                        "EQ": {
+                            "ADD": {
+                                right_operand: 10,
+                                value: 25
+                            },
+                        }
+                    }
+                }
+            }
+            */
 
-        //     auto& arith_body = item.value();
+            auto& arith_body = item.value();
 
-        //     auto arith_op_name = boost::algorithm::to_lower_copy(std::string(arith_body.key()));
-        //     AssertInfo(arith_op_mapping_.count(arith_op_name), "arith op(" + arith_op_name + ") not found");
+            auto arith_op_name = boost::algorithm::to_lower_copy(std::string(arith_body.key()));
+            AssertInfo(arith_op_mapping_.count(arith_op_name), "arith op(" + arith_op_name + ") not found");
 
-        //     auto& arith_op_body = arith_body.value();
-        //     Assert(arith_op_body.is_object());
+            auto& arith_op_body = arith_body.value();
+            Assert(arith_op_body.is_object());
 
-        //     auto right_operand = arith_op_body["right_operand"];
-        //     auto value = arith_op_body["value"];
+            auto right_operand = arith_op_body["right_operand"];
+            auto value = arith_op_body["value"];
 
-        //     if constexpr (std::is_integral_v<T>) {
-        //         Assert(right_operand.is_number_integer());
-        //         Assert(value.is_number_integer());
-        //     } else if constexpr (std::is_floating_point_v<T>) {
-        //         Assert(right_operand.is_number());
-        //         Assert(value.is_number());
-        //     } else {
-        //         static_assert(always_false<T>, "unsupported type");
-        //     }
+            if constexpr (std::is_integral_v<T>) {
+                Assert(right_operand.is_number_integer());
+                Assert(value.is_number_integer());
+            } else if constexpr (std::is_floating_point_v<T>) {
+                Assert(right_operand.is_number());
+                Assert(value.is_number());
+            } else {
+                static_assert(always_false<T>, "unsupported type");
+            }
 
-        //     return std::make_unique<BinaryArithOpUnaryRangeExprImpl<T>>(schema.get_offset(field_name),
-        //                                                                 schema[field_name].get_data_type(),
-        //                                                                 arith_op_mapping_.at(arith_op_name),
-        //                                                                 right_operand,
-        //                                                                 mapping_.at(op_name),
-        //                                                                 value);
-        // }
+            return std::make_unique<BinaryArithOpUnaryRangeExprImpl<T>>(schema.get_offset(field_name),
+                                                                        schema[field_name].get_data_type(),
+                                                                        arith_op_mapping_.at(arith_op_name),
+                                                                        right_operand,
+                                                                        mapping_.at(op_name),
+                                                                        value);
+        }
 
         if constexpr (std::is_same_v<T, bool>) {
             Assert(item.value().is_boolean());
