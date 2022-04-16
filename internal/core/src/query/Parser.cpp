@@ -277,7 +277,7 @@ Parser::ParseRangeNodeImpl(const FieldName& field_name, const Json& body) {
             }
             */
 
-            auto& arith_body = item.value();
+            auto& arith_body = item.value().begin();
 
             auto arith_op_name = boost::algorithm::to_lower_copy(std::string(arith_body.key()));
             AssertInfo(arith_op_mapping_.count(arith_op_name), "arith op(" + arith_op_name + ") not found");
