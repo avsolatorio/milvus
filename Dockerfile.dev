@@ -3,8 +3,6 @@ FROM ubuntu:18.04
 # make generated-proto-go
 # cd tools/core_gen/ && python3 all_generate.py
 
-WORKDIR /milvus
-
 ENV GO_TAR_FILE=go1.17.7.linux-amd64.tar.gz 
 ENV CMAKE_VERSION=3.23
 ENV CMAKE_BUILD=1
@@ -22,7 +20,9 @@ RUN apt-get update  && apt-get -y upgrade \
         m4 \
         automake
 
-COPY scripts/install_deps.sh .
+WORKDIR /milvus
+
+COPY scripts/install_deps.sh scripts/install_deps.sh
 RUN /bin/bash /milvus/scripts/install_deps.sh
 
 # Install go
