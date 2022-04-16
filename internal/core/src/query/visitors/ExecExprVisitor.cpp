@@ -239,27 +239,27 @@ ExecExprVisitor::ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnary
             switch (arith_op) {
                 case ArithOpType::Add: {
                     auto index_func = [val](Index* index) { return index->In(1, &val); };
-                    auto elem_func = [val](T x) { return ((x + right_operand) == val); };
+                    auto elem_func = [val, right_operand](T x) { return ((x + right_operand) == val); };
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
                 case ArithOpType::Sub: {
                     auto index_func = [val](Index* index) { return index->In(1, &val); };
-                    auto elem_func = [val](T x) { return ((x - right_operand) == val); };
+                    auto elem_func = [val, right_operand](T x) { return ((x - right_operand) == val); };
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
                 case ArithOpType::Mul: {
                     auto index_func = [val](Index* index) { return index->In(1, &val); };
-                    auto elem_func = [val](T x) { return ((x * right_operand) == val); };
+                    auto elem_func = [val, right_operand](T x) { return ((x * right_operand) == val); };
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
                 case ArithOpType::Div: {
                     auto index_func = [val](Index* index) { return index->In(1, &val); };
-                    auto elem_func = [val](T x) { return ((x / right_operand) == val); };
+                    auto elem_func = [val, right_operand](T x) { return ((x / right_operand) == val); };
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
                 case ArithOpType::Mod: {
                     auto index_func = [val](Index* index) { return index->In(1, &val); };
-                    auto elem_func = [val](T x) { return ((x % right_operand) == val); };
+                    auto elem_func = [val, right_operand](T x) { return ((x % right_operand) == val); };
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
                 default: {
@@ -271,27 +271,27 @@ ExecExprVisitor::ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnary
             switch (arith_op) {
                 case ArithOpType::Add: {
                     auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
-                    auto elem_func = [val](T x) { return ((x + right_operand) != val); };
+                    auto elem_func = [val, right_operand](T x) { return ((x + right_operand) != val); };
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
                 case ArithOpType::Sub: {
                     auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
-                    auto elem_func = [val](T x) { return ((x - right_operand) != val); };
+                    auto elem_func = [val, right_operand](T x) { return ((x - right_operand) != val); };
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
                 case ArithOpType::Mul: {
                     auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
-                    auto elem_func = [val](T x) { return ((x * right_operand) != val); };
+                    auto elem_func = [val, right_operand](T x) { return ((x * right_operand) != val); };
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
                 case ArithOpType::Div: {
                     auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
-                    auto elem_func = [val](T x) { return ((x / right_operand) != val); };
+                    auto elem_func = [val, right_operand](T x) { return ((x / right_operand) != val); };
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
                 case ArithOpType::Mod: {
                     auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
-                    auto elem_func = [val](T x) { return ((x % right_operand) != val); };
+                    auto elem_func = [val, right_operand](T x) { return ((x % right_operand) != val); };
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
                 default: {
