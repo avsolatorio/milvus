@@ -1,5 +1,8 @@
 FROM ubuntu:18.04
 
+# make generated-proto-go
+# cd tools/core_gen/ && python3 all_generate.py
+
 WORKDIR /milvus
 
 ENV GO_TAR_FILE=go1.17.7.linux-amd64.tar.gz 
@@ -20,13 +23,13 @@ RUN apt-get update  && apt-get -y upgrade \
         automake
 
 # Install go
-RUN wget https://dl.google.com/go/${GO_TAR_FILE} \
+RUN mkdir -p ~/temp && cd ~/temp \
+    && wget https://dl.google.com/go/${GO_TAR_FILE} \
     && tar -C /usr/local -xvf ${GO_TAR_FILE} \
     && export GOROOT=/usr/local/go && export && export PATH=$GOROOT/bin:$PATH
 
 # Build and install CMake from source
-RUN export version=3.23 && export build=1 \
-    && mkdir ~/temp && cd ~/temp \
+RUN mkdir -p ~/temp && cd ~/temp \
     && wget https://cmake.org/files/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.${CMAKE_BUILD}.tar.gz \
     && tar -xzvf cmake-${CMAKE_VERSION}.${CMAKE_BUILD}.tar.gz \
     && cd cmake-${CMAKE_VERSION}.${CMAKE_BUILD}/ \
@@ -35,15 +38,13 @@ RUN export version=3.23 && export build=1 \
     && make install \
     && export PATH=/usr/local/bin:$PATH
 
-RUN mkdir ~/temp && cd ~/temp \
-    git clone https://github.com/facebook/zstd.git \
+RUN mkdir -p ~/temp && cd ~/temp \
+    && git clone https://github.com/facebook/zstd.git \
     && cd zstd \
-    && mkdir build \
-    && cd build \
-    && cmake .. \
+    && cmake \
     && make -j$(nproc) \
     && make install \
-    && cd ../.. \
+    && cd ../ \
     && rm -rf zstd \
     && export PATH=/usr/local/bin:$PATH
 
