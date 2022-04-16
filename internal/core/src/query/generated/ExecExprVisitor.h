@@ -67,6 +67,10 @@ class ExecExprVisitor : public ExprVisitor {
 
     template <typename T>
     auto
+    ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnaryRangeExpr& expr_raw) -> BitsetType;
+
+    template <typename T>
+    auto
     ExecBinaryRangeVisitorDispatcher(BinaryRangeExpr& expr_raw) -> BitsetType;
 
     template <typename T>
