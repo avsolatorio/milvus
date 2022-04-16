@@ -14,7 +14,10 @@ RUN apt-get update  && apt-get -y upgrade \
         unzip \
         cmake \
         sudo \
-        wget
+        wget \
+        libtool \
+        m4 \
+        automake
 
 # Install go
 RUN wget https://dl.google.com/go/${GO_TAR_FILE} \
