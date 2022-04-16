@@ -22,6 +22,9 @@ RUN apt-get update  && apt-get -y upgrade \
         m4 \
         automake
 
+COPY scripts/install_deps.sh .
+RUN /bin/bash /milvus/scripts/install_deps.sh
+
 # Install go
 RUN mkdir -p ~/temp && cd ~/temp \
     && wget https://dl.google.com/go/${GO_TAR_FILE} \
@@ -52,8 +55,5 @@ RUN mkdir -p ~/temp && cd ~/temp \
 RUN apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
-
-COPY scripts/install_deps.sh .
-RUN /bin/bash scripts/install_deps.sh
 
 CMD tail -f /dev/null
