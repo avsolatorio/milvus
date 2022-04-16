@@ -2,7 +2,54 @@ FROM ubuntu:18.04
 
 WORKDIR /milvus
 
+ENV GO_TAR_FILE=go1.17.7.linux-amd64.tar.gz 
+ENV CMAKE_VERSION=3.23
+ENV CMAKE_BUILD=1
+
+RUN apt-get update  && apt-get -y upgrade \
+    && apt install -y \
+        build-essential \
+        libtool \
+        autoconf \
+        unzip \
+        cmake \
+        sudo \
+        wget
+
+# Install go
+RUN wget https://dl.google.com/go/${GO_TAR_FILE} \
+    && tar -C /usr/local -xvf ${GO_TAR_FILE} \
+    && export GOROOT=/usr/local/go && export && export PATH=$GOROOT/bin:$PATH
+
+# Build and install CMake from source
+RUN export version=3.23 && export build=1 \
+    && mkdir ~/temp && cd ~/temp \
+    && wget https://cmake.org/files/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.${CMAKE_BUILD}.tar.gz \
+    && tar -xzvf cmake-${CMAKE_VERSION}.${CMAKE_BUILD}.tar.gz \
+    && cd cmake-${CMAKE_VERSION}.${CMAKE_BUILD}/ \
+    && ./bootstrap \
+    && make -j$(nproc) \
+    && make install \
+    && export PATH=/usr/local/bin:$PATH
+
+RUN mkdir ~/temp && cd ~/temp \
+    git clone https://github.com/facebook/zstd.git \
+    && cd zstd \
+    && mkdir build \
+    && cd build \
+    && cmake .. \
+    && make -j$(nproc) \
+    && make install \
+    && cd ../.. \
+    && rm -rf zstd \
+    && export PATH=/usr/local/bin:$PATH
+
+# Clean up apt
+RUN apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY scripts/install_deps.sh .
-RUN ./install_deps.sh
+RUN /bin/bash scripts/install_deps.sh
 
 CMD tail -f /dev/null
