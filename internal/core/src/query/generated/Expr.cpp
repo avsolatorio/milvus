@@ -31,11 +31,6 @@ TermExpr::accept(ExprVisitor& visitor) {
 }
 
 void
-BinaryArithOpUnaryRangeExpr::accept(ExprVisitor& visitor) {
-    visitor.visit(*this);
-}
-
-void
 UnaryRangeExpr::accept(ExprVisitor& visitor) {
     visitor.visit(*this);
 }

@@ -33,9 +33,6 @@ class ExecExprVisitor : public ExprVisitor {
     visit(TermExpr& expr) override;
 
     void
-    visit(BinaryArithOpUnaryRangeExpr& expr) override;
-
-    void
     visit(UnaryRangeExpr& expr) override;
 
     void

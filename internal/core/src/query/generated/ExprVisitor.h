@@ -29,9 +29,6 @@ class ExprVisitor {
     visit(TermExpr&) = 0;
 
     virtual void
-    visit(BinaryArithOpUnaryRangeExpr&) = 0;
-
-    virtual void
     visit(UnaryRangeExpr&) = 0;
 
     virtual void
