@@ -39,6 +39,9 @@ class VerifyExprVisitor : public ExprVisitor {
     visit(UnaryRangeExpr& expr) override;
 
     void
+    visit(BinaryArithOpUnaryRangeExpr& expr) override;
+
+    void
     visit(BinaryRangeExpr& expr) override;
 
     void

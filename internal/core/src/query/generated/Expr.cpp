@@ -41,6 +41,10 @@ UnaryRangeExpr::accept(ExprVisitor& visitor) {
 }
 
 void
+BinaryArithOpUnaryRangeExpr::accept(ExprVisitor& visitor) {
+    visitor.visit(*this);
+}
+void
 BinaryRangeExpr::accept(ExprVisitor& visitor) {
     visitor.visit(*this);
 }
