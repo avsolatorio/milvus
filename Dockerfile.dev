@@ -54,7 +54,9 @@ RUN mkdir -p ~/temp && cd ~/temp \
     && export PATH=/usr/local/bin:$PATH
 
 # Clean up apt
-RUN apt-get autoremove -y \
+RUN apt install -y python3 \
+    && ln -s /usr/bin/python3 /usr/bin/python \
+    && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
