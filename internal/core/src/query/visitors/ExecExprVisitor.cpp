@@ -262,9 +262,20 @@ ExecExprVisitor::ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnary
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
                 case ArithOpType::Mod: {
-                    auto index_func = [val](Index* index) { return index->In(1, &val); };
-                    auto elem_func = [val, right_operand](T x) { return ((x % right_operand) == val); };
-                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                    switch (expr.data_type_) {
+                    case DataType::Int8:
+                    case DataType::Int16:
+                    case DataType::Int32:
+                    case DataType::Int64: {
+                        auto index_func = [val](Index* index) { return index->In(1, &val); };
+                        auto elem_func = [val, right_operand](T x) { return ((x % right_operand) == val); };
+                        return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                        break
+                    }
+                    default:
+                        PanicInfo("unsupported data type of modulo operation");
+                        break;
+                    }
                 }
                 default: {
                     PanicInfo("unsupported arithmetic operation");
@@ -294,9 +305,20 @@ ExecExprVisitor::ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnary
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
                 case ArithOpType::Mod: {
-                    auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
-                    auto elem_func = [val, right_operand](T x) { return ((x % right_operand) != val); };
-                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                    switch (expr.data_type_) {
+                    case DataType::Int8:
+                    case DataType::Int16:
+                    case DataType::Int32:
+                    case DataType::Int64: {
+                        auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
+                        auto elem_func = [val, right_operand](T x) { return ((x % right_operand) != val); };
+                        return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                        break
+                    }
+                    default:
+                        PanicInfo("unsupported data type of modulo operation");
+                        break;
+                    }
                 }
                 default: {
                     PanicInfo("unsupported arithmetic operation");
@@ -392,10 +414,6 @@ ExecExprVisitor::visit(BinaryArithOpUnaryRangeExpr& expr) {
                "[ExecExprVisitor]DataType of expr isn't field_meta data type");
     BitsetType res;
     switch (expr.data_type_) {
-        case DataType::BOOL: {
-            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<bool>(expr);
-            break;
-        }
         case DataType::INT8: {
             res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<int8_t>(expr);
             break;
