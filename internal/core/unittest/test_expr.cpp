@@ -760,13 +760,12 @@ TEST(Expr, TestBinaryArithOpEvalRangeExceptions) {
         auto loc = dsl_string_tmp.find("@@@@");
         auto dsl_string = dsl_string_tmp;
         dsl_string.replace(loc, 4, clause);
-
         try {
             auto plan = CreatePlan(*schema, dsl_string);
             FAIL() << "Expected AssertionError: " << assert_info << " not thrown";
         }
-        catch(exception& err) {
-            EXPECT_EQ(err.what(), assert_info);
+        catch(const std::exception& err) {
+            ASSERT_TRUE(err.what().find(assert_info) != std::string::npos)
         }
         catch(...) {
             FAIL() << "Expected AssertionError: " << assert_info << " not thrown";
