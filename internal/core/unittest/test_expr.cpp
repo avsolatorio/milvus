@@ -586,7 +586,7 @@ TEST(Expr, TestBinaryArithOpEvalRange) {
     using namespace milvus::query;
     using namespace milvus::segcore;
     std::vector<std::tuple<std::string, std::function<bool(int)>>> testcases = {
-        // Add test cases for BinaryArithOpEvalRangeExpr
+        // Add test cases for BinaryArithOpEvalRangeExpr EvalIn
         {R"("EQ": {
             "ADD": {
                 "right_operand": 500,
@@ -617,6 +617,37 @@ TEST(Expr, TestBinaryArithOpEvalRange) {
                 "value": 0
             }
         })", [](int v) { return (v % 100) == 0; }},
+        // Add test cases for BinaryArithOpEvalRangeExpr EvalNotIn
+        {R"("NE": {
+            "ADD": {
+                "right_operand": 500,
+                "value": 2500
+            }
+        })", [](int v) { return (v + 500) != 2500; }},
+        {R"("NE": {
+            "SUB": {
+                "right_operand": 500,
+                "value": 1500
+            }
+        })", [](int v) { return (v - 500) != 1500; }},
+        {R"("NE": {
+            "MUL": {
+                "right_operand": 2,
+                "value": 4000
+            }
+        })", [](int v) { return (v * 2) != 4000; }},
+        {R"("NE": {
+            "DIV": {
+                "right_operand": 2,
+                "value": 1000
+            }
+        })", [](int v) { return (v / 2) != 1000; }},
+        {R"("NE": {
+            "MOD": {
+                "right_operand": 100,
+                "value": 0
+            }
+        })", [](int v) { return (v % 100) != 0; }},
     };
 
     std::string dsl_string_tmp = R"({
