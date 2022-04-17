@@ -431,12 +431,20 @@ ExecExprVisitor::visit(BinaryArithOpUnaryRangeExpr& expr) {
             break;
         }
         case DataType::FLOAT: {
-            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<float>(expr);
-            break;
+            if (expr.arith_op_type_ != ArithOpType::Mod) {
+                res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<float>(expr);
+                break;
+            } else {
+                PanicInfo("unsupported");
+            }
         }
         case DataType::DOUBLE: {
-            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<double>(expr);
-            break;
+            if (expr.arith_op_type_ != ArithOpType::Mod) {
+                res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<double>(expr);
+                break;
+            } else {
+                PanicInfo("unsupported");
+            }
         }
         default:
             PanicInfo("unsupported");
