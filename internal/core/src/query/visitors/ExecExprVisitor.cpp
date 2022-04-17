@@ -50,6 +50,10 @@ class ExecExprVisitor : ExprVisitor {
 
     template <typename T>
     auto
+    ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnaryRangeExpr& expr_raw) -> BitsetType;
+
+    template <typename T>
+    auto
     ExecBinaryRangeVisitorDispatcher(BinaryRangeExpr& expr_raw) -> BitsetType;
 
     template <typename T>
@@ -372,6 +376,48 @@ ExecExprVisitor::visit(UnaryRangeExpr& expr) {
         }
         case DataType::DOUBLE: {
             res = ExecUnaryRangeVisitorDispatcher<double>(expr);
+            break;
+        }
+        default:
+            PanicInfo("unsupported");
+    }
+    AssertInfo(res.size() == row_count_, "[ExecExprVisitor]Size of results not equal row count");
+    bitset_opt_ = std::move(res);
+}
+
+void
+ExecExprVisitor::visit(BinaryArithOpUnaryRangeExpr& expr) {
+    auto& field_meta = segment_.get_schema()[expr.field_offset_];
+    AssertInfo(expr.data_type_ == field_meta.get_data_type(),
+               "[ExecExprVisitor]DataType of expr isn't field_meta data type");
+    BitsetType res;
+    switch (expr.data_type_) {
+        case DataType::BOOL: {
+            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<bool>(expr);
+            break;
+        }
+        case DataType::INT8: {
+            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<int8_t>(expr);
+            break;
+        }
+        case DataType::INT16: {
+            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<int16_t>(expr);
+            break;
+        }
+        case DataType::INT32: {
+            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<int32_t>(expr);
+            break;
+        }
+        case DataType::INT64: {
+            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<int64_t>(expr);
+            break;
+        }
+        case DataType::FLOAT: {
+            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<float>(expr);
+            break;
+        }
+        case DataType::DOUBLE: {
+            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<double>(expr);
             break;
         }
         default:
