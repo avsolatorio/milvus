@@ -470,12 +470,12 @@ func (pc *parserContext) createCmpExpr(left, right ant_ast.Node, operator string
 	return expr, nil
 }
 
-func (pc *parserContext) createBinaryArithOpCmpExpr(left *ant_ast.FunctionNode, right *ant_ast.Node, operator string) (*planpb.Expr, error) {
+func (pc *parserContext) createBinaryArithOpEvalExpr(left *ant_ast.FunctionNode, right *ant_ast.Node, operator string) (*planpb.Expr, error) {
 	switch operator {
 	case "==", "!=":
 		binArithOp, err := pc.handleFunction(left)
 		if err != nil {
-			return nil, fmt.Errorf("createBinaryArithOpCmpExpr: %v", err)
+			return nil, fmt.Errorf("createBinaryArithOpEvalExpr: %v", err)
 		}
 		op := getCompareOpType(operator, false)
 		val, err := pc.handleLeafValue(right, binArithOp.ColumnInfo.DataType)
@@ -511,7 +511,7 @@ func (pc *parserContext) handleBinaryArithCmpExpr(node *ant_ast.BinaryNode) (*pl
 		return pc.createCmpExpr(node.Left, node.Right, node.Operator)
 	} else {
 		// Only the left node is a function node
-		return pc.createBinaryArithOpCmpExpr(leftNode, &node.Right, node.Operator)
+		return pc.createBinaryArithOpEvalExpr(leftNode, &node.Right, node.Operator)
 	}
 }
 
