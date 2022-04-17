@@ -263,10 +263,10 @@ ExecExprVisitor::ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnary
                 }
                 case ArithOpType::Mod: {
                     switch (expr.data_type_) {
-                    case DataType::Int8:
-                    case DataType::Int16:
-                    case DataType::Int32:
-                    case DataType::Int64: {
+                    case DataType::INT8:
+                    case DataType::INT16:
+                    case DataType::INT32:
+                    case DataType::INT64: {
                         auto index_func = [val](Index* index) { return index->In(1, &val); };
                         auto elem_func = [val, right_operand](T x) { return ((x % right_operand) == val); };
                         return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
@@ -306,10 +306,10 @@ ExecExprVisitor::ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnary
                 }
                 case ArithOpType::Mod: {
                     switch (expr.data_type_) {
-                    case DataType::Int8:
-                    case DataType::Int16:
-                    case DataType::Int32:
-                    case DataType::Int64: {
+                    case DataType::INT8:
+                    case DataType::INT16:
+                    case DataType::INT32:
+                    case DataType::INT64: {
                         auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
                         auto elem_func = [val, right_operand](T x) { return ((x % right_operand) != val); };
                         return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
