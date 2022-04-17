@@ -272,6 +272,13 @@ ExecExprVisitor::ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnary
                         return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                         break;
                     }
+                    case DataType::FLOAT:
+                    case DataType::DOUBLE: {
+                        auto index_func = [val](Index* index) { return index->In(1, &val); };
+                        auto elem_func = [val, right_operand](T x) { return (fmod(x, right_operand) == val); };
+                        return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                        break;
+                    }
                     default:
                         PanicInfo("unsupported data type of modulo operation");
                         break;
@@ -312,6 +319,13 @@ ExecExprVisitor::ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnary
                     case DataType::INT64: {
                         auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
                         auto elem_func = [val, right_operand](T x) { return ((x % right_operand) != val); };
+                        return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                        break;
+                    }
+                    case DataType::FLOAT:
+                    case DataType::DOUBLE: {
+                        auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
+                        auto elem_func = [val, right_operand](T x) { return (fmod(x, right_operand) != val); };
                         return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                         break;
                     }
@@ -431,20 +445,12 @@ ExecExprVisitor::visit(BinaryArithOpUnaryRangeExpr& expr) {
             break;
         }
         case DataType::FLOAT: {
-            if (expr.arith_op_ != ArithOpType::Mod) {
-                res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<float>(expr);
-                break;
-            } else {
-                PanicInfo("unsupported");
-            }
+            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<float>(expr);
+            break;
         }
         case DataType::DOUBLE: {
-            if (expr.arith_op_ != ArithOpType::Mod) {
-                res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<double>(expr);
-                break;
-            } else {
-                PanicInfo("unsupported");
-            }
+            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<double>(expr);
+            break;
         }
         default:
             PanicInfo("unsupported");
