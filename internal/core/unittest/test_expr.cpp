@@ -586,7 +586,7 @@ TEST(Expr, TestBinaryArithOpEvalRange) {
     using namespace milvus::query;
     using namespace milvus::segcore;
     std::vector<std::tuple<std::string, std::function<bool(int)>>> testcases = {
-        // Add test cases for BinaryArithOpEvalRangeExpr EvalIn
+        // Add test cases for BinaryArithOpEvalRangeExpr EvalEq
         {R"("EQ": {
             "ADD": {
                 "right_operand": 500,
@@ -617,7 +617,7 @@ TEST(Expr, TestBinaryArithOpEvalRange) {
                 "value": 0
             }
         })", [](int v) { return (v % 100) == 0; }},
-        // Add test cases for BinaryArithOpEvalRangeExpr EvalNotIn
+        // Add test cases for BinaryArithOpEvalRangeExpr EvalNotEq
         {R"("NE": {
             "ADD": {
                 "right_operand": 500,

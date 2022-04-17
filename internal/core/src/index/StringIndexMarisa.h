@@ -45,10 +45,10 @@ class StringIndexMarisa : public StringIndex {
     NotIn(size_t n, const std::string* values) override;
 
     const TargetBitmapPtr
-    EvalIn(std::string arith_op, std::string right_operand, std::string value) override;
+    EvalEq(std::string arith_op, std::string right_operand, std::string value) override;
 
     const TargetBitmapPtr
-    EvalNotIn(std::string arith_op, std::string right_operand, std::string value) override;
+    EvalNotEq(std::string arith_op, std::string right_operand, std::string value) override;
 
     const TargetBitmapPtr
     Range(std::string value, OperatorType op) override;

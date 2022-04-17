@@ -118,7 +118,7 @@ ScalarIndexSort<T>::In(const size_t n, const T* values) {
 
 template <typename T>
 inline const TargetBitmapPtr
-ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
+ScalarIndexSort<T>::EvalEq(std::string arith_op, T right_operand, T value) {
     if (!is_built_) {
         build();
     }
@@ -134,7 +134,7 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
         ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
         for (; lb < ub; ++lb) {
             if (lb->a_ + right_operand != value) {
-                std::cout << "error happens in ScalarIndexSort<T>::EvalIn, expected value is: " << value
+                std::cout << "error happens in ScalarIndexSort<T>::EvalEq, expected value is: " << value
                           << ", but the evaluated value is: " << (lb->a_ + right_operand);
             }
             bitset->set(lb->idx_);
@@ -144,7 +144,7 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
         ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
         for (; lb < ub; ++lb) {
             if (lb->a_ - right_operand != value) {
-                std::cout << "error happens in ScalarIndexSort<T>::EvalIn, expected value is: " << value
+                std::cout << "error happens in ScalarIndexSort<T>::EvalEq, expected value is: " << value
                           << ", but the evaluated value is: " << (lb->a_ - right_operand);
             }
             bitset->set(lb->idx_);
@@ -154,7 +154,7 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
         ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
         for (; lb < ub; ++lb) {
             if (lb->a_ * right_operand != value) {
-                std::cout << "error happens in ScalarIndexSort<T>::EvalIn, expected value is: " << value
+                std::cout << "error happens in ScalarIndexSort<T>::EvalEq, expected value is: " << value
                           << ", but the evaluated value is: " << (lb->a_ * right_operand);
             }
             bitset->set(lb->idx_);
@@ -164,7 +164,7 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
         ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
         for (; lb < ub; ++lb) {
             if (lb->a_ / right_operand != value) {
-                std::cout << "error happens in ScalarIndexSort<T>::EvalIn, expected value is: " << value
+                std::cout << "error happens in ScalarIndexSort<T>::EvalEq, expected value is: " << value
                           << ", but the evaluated value is: " << (lb->a_ / right_operand);
             }
             bitset->set(lb->idx_);
@@ -178,44 +178,14 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
             }
         }
     } else {
-        throw std::invalid_argument("ScalarIndexSort::EvalIn: invalid arith_op");
+        throw std::invalid_argument("ScalarIndexSort::EvalEq: invalid arith_op");
     }
     return bitset;
-
-    // auto lb = data_.begin();
-    // auto ub = data_.end();
-
-    // for (; lb < ub; ++lb) {
-    //     if (arith_op == "add") {
-    //         if (lb->a_ + right_operand == value) {
-    //             bitset->set(lb->idx_);
-    //         }
-    //     } else if (arith_op == "sub") {
-    //         if (lb->a_ - right_operand == value) {
-    //             bitset->set(lb->idx_);
-    //         }
-    //     } else if (arith_op == "mul") {
-    //         if (lb->a_ * right_operand == value) {
-    //             bitset->set(lb->idx_);
-    //         }
-    //     } else if (arith_op == "div") {
-    //         if (lb->a_ / right_operand == value) {
-    //             bitset->set(lb->idx_);
-    //         }
-    //     } else if (arith_op == "mod") {
-    //         if (static_cast<T>(fmod(lb->a_, right_operand)) == value) {
-    //             bitset->set(lb->idx_);
-    //         }
-    //     } else {
-    //         throw std::invalid_argument("ScalarIndexSort::EvalIn: invalid arith_op");
-    //     }
-    // }
-    // return bitset;
 }
 
 template <typename T>
 inline const TargetBitmapPtr
-ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
+ScalarIndexSort<T>::EvalNotEq(std::string arith_op, T right_operand, T value) {
     if (!is_built_) {
         build();
     }
@@ -232,7 +202,7 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
         ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
         for (; lb < ub; ++lb) {
             if (lb->a_ + right_operand != value) {
-                std::cout << "error happens in ScalarIndexSort<T>::EvalNotIn, expected value is: " << value
+                std::cout << "error happens in ScalarIndexSort<T>::EvalNotEq, expected value is: " << value
                           << ", but the evaluated value is: " << (lb->a_ + right_operand);
             }
             bitset->reset(lb->idx_);
@@ -242,7 +212,7 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
         ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
         for (; lb < ub; ++lb) {
             if (lb->a_ - right_operand != value) {
-                std::cout << "error happens in ScalarIndexSort<T>::EvalNotIn, expected value is: " << value
+                std::cout << "error happens in ScalarIndexSort<T>::EvalNotEq, expected value is: " << value
                           << ", but the evaluated value is: " << (lb->a_ - right_operand);
             }
             bitset->reset(lb->idx_);
@@ -252,7 +222,7 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
         ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
         for (; lb < ub; ++lb) {
             if (lb->a_ * right_operand != value) {
-                std::cout << "error happens in ScalarIndexSort<T>::EvalNotIn, expected value is: " << value
+                std::cout << "error happens in ScalarIndexSort<T>::EvalNotEq, expected value is: " << value
                           << ", but the evaluated value is: " << (lb->a_ * right_operand);
             }
             bitset->reset(lb->idx_);
@@ -262,7 +232,7 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
         ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
         for (; lb < ub; ++lb) {
             if (lb->a_ / right_operand != value) {
-                std::cout << "error happens in ScalarIndexSort<T>::EvalNotIn, expected value is: " << value
+                std::cout << "error happens in ScalarIndexSort<T>::EvalNotEq, expected value is: " << value
                           << ", but the evaluated value is: " << (lb->a_ / right_operand);
             }
             bitset->reset(lb->idx_);
@@ -276,39 +246,9 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
             }
         }
     } else {
-        throw std::invalid_argument("ScalarIndexSort::EvalNotIn: invalid arith_op");
+        throw std::invalid_argument("ScalarIndexSort::EvalNotEq: invalid arith_op");
     }
     return bitset;
-
-    // auto lb = data_.begin();
-    // auto ub = data_.end();
-
-    // for (; lb < ub; ++lb) {
-    //     if (arith_op == "add") {
-    //         if (lb->a_ + right_operand == value) {
-    //             bitset->reset(lb->idx_);
-    //         }
-    //     } else if (arith_op == "sub") {
-    //         if (lb->a_ - right_operand == value) {
-    //             bitset->reset(lb->idx_);
-    //         }
-    //     } else if (arith_op == "mul") {
-    //         if (lb->a_ * right_operand == value) {
-    //             bitset->reset(lb->idx_);
-    //         }
-    //     } else if (arith_op == "div") {
-    //         if (lb->a_ / right_operand == value) {
-    //             bitset->reset(lb->idx_);
-    //         }
-    //     } else if (arith_op == "mod") {
-    //         if (static_cast<T>(fmod(lb->a_, right_operand)) != value) {
-    //             bitset->reset(lb->idx_);
-    //         }
-    //     } else {
-    //         throw std::invalid_argument("ScalarIndexSort::EvalNotIn: invalid arith_op");
-    //     }
-    // }
-    // return bitset;
 }
 
 template <typename T>

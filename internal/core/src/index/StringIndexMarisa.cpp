@@ -150,7 +150,7 @@ StringIndexMarisa::NotIn(size_t n, const std::string* values) {
 
 
 const TargetBitmapPtr
-StringIndexMarisa::EvalIn(std::string arith_op, std::string right_operand, std::string value) {
+StringIndexMarisa::EvalEq(std::string arith_op, std::string right_operand, std::string value) {
     TargetBitmapPtr bitset = std::make_unique<TargetBitmap>(str_ids_.size());
     // for (size_t i = 0; i < n; i++) {
     //     auto str = values[i];
@@ -166,7 +166,7 @@ StringIndexMarisa::EvalIn(std::string arith_op, std::string right_operand, std::
 }
 
 const TargetBitmapPtr
-StringIndexMarisa::EvalNotIn(std::string arith_op, std::string right_operand, std::string value) {
+StringIndexMarisa::EvalNotEq(std::string arith_op, std::string right_operand, std::string value) {
     TargetBitmapPtr bitset = std::make_unique<TargetBitmap>(str_ids_.size());
     bitset->set();
 
