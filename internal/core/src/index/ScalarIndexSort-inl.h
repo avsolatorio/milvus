@@ -123,13 +123,15 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
         build();
     }
     TargetBitmapPtr bitset = std::make_unique<TargetBitmap>(data_.size());
+    auto lb = data_.begin();
+    auto ub = data_.end();
 
     switch (arith_op) {
     // For "add", "sub", "mul", and "div", we can use the lower_bound and upper_bound methods to limit the search range.
     // Note that we need to perform the inverse operations on the bounds to get the correct results.
     case "add":
-        auto lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
-        auto ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
+        lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
+        ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
         for (; lb < ub; ++lb) {
             if (lb->a_ + right_operand != value) {
                 std::cout << "error happens in ScalarIndexSort<T>::EvalIn, expected value is: " << value
@@ -139,8 +141,8 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
         }
         break;
     case "sub":
-        auto lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
-        auto ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
+        lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
+        ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
         for (; lb < ub; ++lb) {
             if (lb->a_ - right_operand != value) {
                 std::cout << "error happens in ScalarIndexSort<T>::EvalIn, expected value is: " << value
@@ -150,8 +152,8 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
         }
         break;
     case "mul":
-        auto lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
-        auto ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
+        lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
+        ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
         for (; lb < ub; ++lb) {
             if (lb->a_ * right_operand != value) {
                 std::cout << "error happens in ScalarIndexSort<T>::EvalIn, expected value is: " << value
@@ -161,8 +163,8 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
         }
         break;
     case "div":
-        auto lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
-        auto ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
+        lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
+        ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
         for (; lb < ub; ++lb) {
             if (lb->a_ / right_operand != value) {
                 std::cout << "error happens in ScalarIndexSort<T>::EvalIn, expected value is: " << value
@@ -174,9 +176,6 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
     case "mod":
         // Since there's is no inverse for the modulo operator, we can't use the same logic as for the other operations.
         // This means that we need to do a full scan of the data.
-        auto lb = data_.begin();
-        auto ub = data_.end();
-
         for (; lb < ub; ++lb) {
             if (static_cast<T>(fmod(lb->a_, right_operand)) == value) {
                 bitset->set(lb->idx_);
@@ -228,14 +227,15 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
     }
     TargetBitmapPtr bitset = std::make_unique<TargetBitmap>(data_.size());
     bitset->set();
-
+    auto lb = data_.begin();
+    auto ub = data_.end();
 
     switch (arith_op) {
     // For "add", "sub", "mul", and "div", we can use the lower_bound and upper_bound methods to limit the search range.
     // Note that we need to perform the inverse operations on the bounds to get the correct results.
     case "add":
-        auto lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
-        auto ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
+        lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
+        ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
         for (; lb < ub; ++lb) {
             if (lb->a_ + right_operand != value) {
                 std::cout << "error happens in ScalarIndexSort<T>::EvalNotIn, expected value is: " << value
@@ -245,8 +245,8 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
         }
         break;
     case "sub":
-        auto lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
-        auto ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
+        lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
+        ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
         for (; lb < ub; ++lb) {
             if (lb->a_ - right_operand != value) {
                 std::cout << "error happens in ScalarIndexSort<T>::EvalNotIn, expected value is: " << value
@@ -256,8 +256,8 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
         }
         break;
     case "mul":
-        auto lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
-        auto ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
+        lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
+        ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
         for (; lb < ub; ++lb) {
             if (lb->a_ * right_operand != value) {
                 std::cout << "error happens in ScalarIndexSort<T>::EvalNotIn, expected value is: " << value
@@ -267,8 +267,8 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
         }
         break;
     case "div":
-        auto lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
-        auto ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
+        lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
+        ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
         for (; lb < ub; ++lb) {
             if (lb->a_ / right_operand != value) {
                 std::cout << "error happens in ScalarIndexSort<T>::EvalNotIn, expected value is: " << value
@@ -280,9 +280,6 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
     case "mod":
         // Since there's is no inverse for the modulo operator, we can't use the same logic as for the other operations.
         // This means that we need to do a full scan of the data.
-        auto lb = data_.begin();
-        auto ub = data_.end();
-
         for (; lb < ub; ++lb) {
             if (static_cast<T>(fmod(lb->a_, right_operand)) == value) {
                 bitset->reset(lb->idx_);
