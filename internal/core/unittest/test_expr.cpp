@@ -753,7 +753,7 @@ TEST(Expr, TestBinaryArithOpEvalRangeExceptions) {
                 "right_operand": true,
                 "value": false
             }
-        })", "bool type unsupported", DataType::BOOL},
+        })", "bool type is not supported", DataType::BOOL},
     };
 
     std::string dsl_string_tmp = R"({

@@ -286,7 +286,7 @@ Parser::ParseRangeNodeImpl(const FieldName& field_name, const Json& body) {
             auto value = arith_op_body["value"];
 
             if constexpr (std::is_same_v<T, bool>) {
-                static_assert(always_false<T>, "bool type unsupported");
+                throw std::runtime_error("bool type is not supported");
             } else if constexpr (std::is_integral_v<T>) {
                 Assert(right_operand.is_number_integer());
                 Assert(value.is_number_integer());
