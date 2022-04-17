@@ -714,14 +714,32 @@ TEST(Expr, TestBinaryArithOpEvalRange) {
 TEST(Expr, TestBinaryArithOpEvalRangeExceptions) {
     using namespace milvus::query;
     using namespace milvus::segcore;
-    std::vector<std::tuple<std::string, std::string>> testcases = {
+    std::vector<std::tuple<std::string, std::string, DataType>> testcases = {
         // Add test for data type mismatch
         {R"("EQ": {
             "ADD": {
                 "right_operand": 500,
                 "value": 2500.00
             }
-        })", "Assert \"(value.is_number_integer())\""},
+        })", "Assert \"(value.is_number_integer())\"", DataType::INT32},
+        {R"("EQ": {
+            "ADD": {
+                "right_operand": 500.0,
+                "value": 2500
+            }
+        })", "Assert \"(right_operand.is_number_integer())\"", DataType::INT32},
+        {R"("EQ": {
+            "ADD": {
+                "right_operand": 500.0,
+                "value": true
+            }
+        })", "Assert \"(value.is_number())\"", DataType::FLOAT},
+        {R"("EQ": {
+            "ADD": {
+                "right_operand": "500",
+                "value": 2500.0
+            }
+        })", "Assert \"(right_operand.is_number())\"", DataType::FLOAT},
     };
 
     std::string dsl_string_tmp = R"({
@@ -729,9 +747,7 @@ TEST(Expr, TestBinaryArithOpEvalRangeExceptions) {
             "must": [
                 {
                     "range": {
-                        "age": {
-                            @@@@
-                        }
+                        @@@@@
                     }
                 },
                 {
@@ -751,21 +767,42 @@ TEST(Expr, TestBinaryArithOpEvalRangeExceptions) {
         }
     })";
 
+    std::string dsl_string_int = R"(
+        "age": {
+            @@@@
+        })";
+
+    std::string dsl_string_num = R"(
+        "FloatN": {
+            @@@@
+        })";
+
     auto schema = std::make_shared<Schema>();
     schema->AddDebugField("fakevec", DataType::VECTOR_FLOAT, 16, MetricType::METRIC_L2);
     schema->AddDebugField("age", DataType::INT32);
     schema->AddDebugField("FloatN", DataType::FLOAT);
 
-    for (auto [clause, assert_info] : testcases) {
-        auto loc = dsl_string_tmp.find("@@@@");
+    for (auto [clause, assert_info, dtype] : testcases) {
+        auto loc = dsl_string_tmp.find("@@@@@");
         auto dsl_string = dsl_string_tmp;
+        if (dtype == DataType::INT32) {
+            dsl_string.replace(loc, 5, dsl_string_int);
+        } else if (dtype == DataType::FLOAT) {
+            dsl_string.replace(loc, 5, dsl_string_num);
+        } else {
+            ASSERT_TRUE(false) << "Unsupported data type";
+        }
+
+        auto loc = dsl_string.find("@@@@");
         dsl_string.replace(loc, 4, clause);
+
         try {
             auto plan = CreatePlan(*schema, dsl_string);
             FAIL() << "Expected AssertionError: " << assert_info << " not thrown";
         }
         catch(const std::exception& err) {
-            ASSERT_TRUE(err.what().find(assert_info) != std::string::npos)
+            std::string err_msg = err.what();
+            ASSERT_TRUE(err_msg.find(assert_info) != std::string::npos);
         }
         catch(...) {
             FAIL() << "Expected AssertionError: " << assert_info << " not thrown";
