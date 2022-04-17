@@ -262,27 +262,31 @@ ExecExprVisitor::ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnary
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
                 case ArithOpType::Mod: {
-                    switch (expr.data_type_) {
-                    case DataType::INT8:
-                    case DataType::INT16:
-                    case DataType::INT32:
-                    case DataType::INT64: {
-                        auto index_func = [val](Index* index) { return index->In(1, &val); };
-                        auto elem_func = [val, right_operand](T x) { return ((x % right_operand) == val); };
-                        return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
-                        break;
-                    }
-                    case DataType::FLOAT:
-                    case DataType::DOUBLE: {
-                        auto index_func = [val](Index* index) { return index->In(1, &val); };
-                        auto elem_func = [val, right_operand](T x) { return (fmod(x, right_operand) == val); };
-                        return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
-                        break;
-                    }
-                    default:
-                        PanicInfo("unsupported data type of modulo operation");
-                        break;
-                    }
+                    auto index_func = [val](Index* index) { return index->In(1, &val); };
+                    auto elem_func = [val, right_operand](T x) { return (static_cast<T>(fmod(x, right_operand)) == val); };
+                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+
+                    // switch (expr.data_type_) {
+                    // case DataType::INT8:
+                    // case DataType::INT16:
+                    // case DataType::INT32:
+                    // case DataType::INT64: {
+                    //     auto index_func = [val](Index* index) { return index->In(1, &val); };
+                    //     auto elem_func = [val, right_operand](T x) { return ((x % right_operand) == val); };
+                    //     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                    //     break;
+                    // }
+                    // case DataType::FLOAT:
+                    // case DataType::DOUBLE: {
+                    //     auto index_func = [val](Index* index) { return index->In(1, &val); };
+                    //     auto elem_func = [val, right_operand](T x) { return (fmod(x, right_operand) == val); };
+                    //     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                    //     break;
+                    // }
+                    // default:
+                    //     PanicInfo("unsupported data type of modulo operation");
+                    //     break;
+                    // }
                 }
                 default: {
                     PanicInfo("unsupported arithmetic operation");
@@ -312,27 +316,30 @@ ExecExprVisitor::ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnary
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
                 case ArithOpType::Mod: {
-                    switch (expr.data_type_) {
-                    case DataType::INT8:
-                    case DataType::INT16:
-                    case DataType::INT32:
-                    case DataType::INT64: {
-                        auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
-                        auto elem_func = [val, right_operand](T x) { return ((x % right_operand) != val); };
-                        return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
-                        break;
-                    }
-                    case DataType::FLOAT:
-                    case DataType::DOUBLE: {
-                        auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
-                        auto elem_func = [val, right_operand](T x) { return (fmod(x, right_operand) != val); };
-                        return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
-                        break;
-                    }
-                    default:
-                        PanicInfo("unsupported data type of modulo operation");
-                        break;
-                    }
+                    auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
+                    auto elem_func = [val, right_operand](T x) { return (static_cast<T>(fmod(x, right_operand)) != val); };
+                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                    // switch (expr.data_type_) {
+                    // case DataType::INT8:
+                    // case DataType::INT16:
+                    // case DataType::INT32:
+                    // case DataType::INT64: {
+                    //     auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
+                    //     auto elem_func = [val, right_operand](T x) { return ((x % right_operand) != val); };
+                    //     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                    //     break;
+                    // }
+                    // case DataType::FLOAT:
+                    // case DataType::DOUBLE: {
+                    //     auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
+                    //     auto elem_func = [val, right_operand](T x) { return (fmod(x, right_operand) != val); };
+                    //     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                    //     break;
+                    // }
+                    // default:
+                    //     PanicInfo("unsupported data type of modulo operation");
+                    //     break;
+                    // }
                 }
                 default: {
                     PanicInfo("unsupported arithmetic operation");
