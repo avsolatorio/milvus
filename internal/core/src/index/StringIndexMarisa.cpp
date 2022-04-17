@@ -148,6 +148,40 @@ StringIndexMarisa::NotIn(size_t n, const std::string* values) {
     return bitset;
 }
 
+
+const TargetBitmapPtr
+StringIndexMarisa::EvalIn(std::string arith_op, std::string right_operand, std::string value) {
+    TargetBitmapPtr bitset = std::make_unique<TargetBitmap>(str_ids_.size());
+    // for (size_t i = 0; i < n; i++) {
+    //     auto str = values[i];
+    //     auto str_id = lookup(str);
+    //     if (str_id >= 0) {
+    //         auto offsets = str_ids_to_offsets_[str_id];
+    //         for (auto offset : offsets) {
+    //             bitset->set(offset);
+    //         }
+    //     }
+    // }
+    return bitset;
+}
+
+const TargetBitmapPtr
+StringIndexMarisa::EvalNotIn(std::string arith_op, std::string right_operand, std::string value) {
+    TargetBitmapPtr bitset = std::make_unique<TargetBitmap>(str_ids_.size());
+    bitset->set();
+
+    // auto str = values[i];
+    // auto str_id = lookup(str);
+    // if (str_id >= 0) {
+    //     auto offsets = str_ids_to_offsets_[str_id];
+    //     for (auto offset : offsets) {
+    //         bitset->reset(offset);
+    //     }
+    // }
+
+    return bitset;
+}
+
 const TargetBitmapPtr
 StringIndexMarisa::Range(std::string value, OperatorType op) {
     throw std::runtime_error("todo: unsupported now");
