@@ -710,3 +710,66 @@ TEST(Expr, TestBinaryArithOpEvalRange) {
         }
     }
 }
+
+TEST(Expr, TestBinaryArithOpEvalRangeExceptions) {
+    using namespace milvus::query;
+    using namespace milvus::segcore;
+    std::vector<std::tuple<std::string, std::string>>> testcases = {
+        // Add test for data type mismatch
+        {R"("EQ": {
+            "ADD": {
+                "right_operand": 500,
+                "value": 2500.00
+            }
+        })", "Assert \"(value.is_number_integer())\""},
+    };
+
+    std::string dsl_string_tmp = R"({
+        "bool": {
+            "must": [
+                {
+                    "range": {
+                        "age": {
+                            @@@@
+                        }
+                    }
+                },
+                {
+                    "vector": {
+                        "fakevec": {
+                            "metric_type": "L2",
+                            "params": {
+                                "nprobe": 10
+                            },
+                            "query": "$0",
+                            "topk": 10,
+                            "round_decimal": 3
+                        }
+                    }
+                }
+            ]
+        }
+    })";
+
+    auto schema = std::make_shared<Schema>();
+    schema->AddDebugField("fakevec", DataType::VECTOR_FLOAT, 16, MetricType::METRIC_L2);
+    schema->AddDebugField("age", DataType::INT32);
+    schema->AddDebugField("FloatN", DataType::FLOAT);
+
+    for (auto [clause, assert_info] : testcases) {
+        auto loc = dsl_string_tmp.find("@@@@");
+        auto dsl_string = dsl_string_tmp;
+        dsl_string.replace(loc, 4, clause);
+
+        try {
+            auto plan = CreatePlan(*schema, dsl_string);
+            FAIL() << "Expected AssertionError: " << assert_info << " not thrown";
+        }
+        catch(exception& err) {
+            EXPECT_EQ(err.what(), assert_info);
+        }
+        catch(...) {
+            FAIL() << "Expected AssertionError: " << assert_info << " not thrown";
+        }
+    }
+}
