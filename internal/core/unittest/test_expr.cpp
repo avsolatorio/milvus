@@ -611,12 +611,12 @@ TEST(Expr, TestBinaryArithOpUnaryRange) {
                 "value": 1000
             }
         })", [](int v) { return (v / 2) == 1000; }},
-        {R"("EQ": {
-            "MOD": {
-                "right_operand": 100,
-                "value": 1029
-            }
-        })", [](int v) { return (v % 100) == 0; }},
+        // {R"("EQ": {
+        //     "MOD": {
+        //         "right_operand": 100,
+        //         "value": 1029
+        //     }
+        // })", [](int v) { return (v % 100) == 0; }},
     };
 
     std::string dsl_string_tmp = R"({
