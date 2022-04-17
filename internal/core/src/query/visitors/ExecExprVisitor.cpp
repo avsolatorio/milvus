@@ -242,22 +242,22 @@ ExecExprVisitor::ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnary
         case OpType::Equal: {
             switch (arith_op) {
                 case ArithOpType::Add: {
-                    auto index_func = [val, right_operand](Index* index) { auto rval = (val - right_operand); return index->In(1, &rval); };
+                    auto index_func = [val, right_operand](Index* index) { auto rval = static_cast<T>(val - right_operand); return index->In(1, &rval); };
                     auto elem_func = [val, right_operand](T x) { return ((x + right_operand) == val); };
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
                 case ArithOpType::Sub: {
-                    auto index_func = [val](Index* index) { auto rval = (val + right_operand); return index->In(1, &rval); };
+                    auto index_func = [val, right_operand](Index* index) { auto rval = static_cast<T>(val + right_operand); return index->In(1, &rval); };
                     auto elem_func = [val, right_operand](T x) { return ((x - right_operand) == val); };
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
                 case ArithOpType::Mul: {
-                    auto index_func = [val](Index* index) { auto rval = (val / right_operand); return index->In(1, &rval); };
+                    auto index_func = [val, right_operand](Index* index) { auto rval = static_cast<T>(val / right_operand); return index->In(1, &rval); };
                     auto elem_func = [val, right_operand](T x) { return ((x * right_operand) == val); };
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
                 case ArithOpType::Div: {
-                    auto index_func = [val](Index* index) { auto rval = (val * right_operand); return index->In(1, &rval); };
+                    auto index_func = [val, right_operand](Index* index) { auto rval = static_cast<T>(val * right_operand); return index->In(1, &rval); };
                     auto elem_func = [val, right_operand](T x) { return ((x / right_operand) == val); };
                     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
                 }
