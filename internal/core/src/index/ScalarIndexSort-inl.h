@@ -169,23 +169,23 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
 
     for (; lb < ub; ++lb) {
         if (arith_op == "add") {
-            if (lb->a_ + right_operand == value) {
+            if (lb->a_ + right_operand != value) {
                 bitset->set(lb->idx_);
             }
         } else if (arith_op == "sub") {
-            if (lb->a_ - right_operand == value) {
+            if (lb->a_ - right_operand != value) {
                 bitset->set(lb->idx_);
             }
         } else if (arith_op == "mul") {
-            if (lb->a_ * right_operand == value) {
+            if (lb->a_ * right_operand != value) {
                 bitset->set(lb->idx_);
             }
         } else if (arith_op == "div") {
-            if (lb->a_ / right_operand == value) {
+            if (lb->a_ / right_operand != value) {
                 bitset->set(lb->idx_);
             }
         } else if (arith_op == "mod") {
-            if (static_cast<T>(fmod(lb->a_, right_operand)) == value) {
+            if (static_cast<T>(fmod(lb->a_, right_operand)) != value) {
                 bitset->set(lb->idx_);
             }
         } else {
