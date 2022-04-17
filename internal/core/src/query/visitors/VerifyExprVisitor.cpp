@@ -33,7 +33,7 @@ VerifyExprVisitor::visit(UnaryRangeExpr& expr) {
 }
 
 void
-VerifyExprVisitor::visit(BinaryArithOpUnaryRangeExpr& expr) {
+VerifyExprVisitor::visit(BinaryArithOpEvalRangeExpr& expr) {
     // TODO
 }
 

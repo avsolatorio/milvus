@@ -96,7 +96,7 @@ message BinaryArithOp {
   GenericValue right_operand = 3;
 }
 
-message BinaryArithOpUnaryRangeExpr {
+message BinaryArithOpEvalRangeExpr {
   ColumnInfo column_info = 1;
   ArithOpType arith_op = 2;
   GenericValue right_operand = 3;
@@ -112,7 +112,7 @@ message Expr {
     CompareExpr compare_expr = 4;
     UnaryRangeExpr unary_range_expr = 5;
     BinaryRangeExpr binary_range_expr = 6;
-    BinaryArithOpUnaryRangeExpr binary_arith_op_unary_range_expr = 7;
+    BinaryArithOpEvalRangeExpr binary_arith_op_eval_range_expr = 7;
   };
 }
 

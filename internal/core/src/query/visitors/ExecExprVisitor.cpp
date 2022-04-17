@@ -50,7 +50,7 @@ class ExecExprVisitor : ExprVisitor {
 
     template <typename T>
     auto
-    ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnaryRangeExpr& expr_raw) -> BitsetType;
+    ExecBinaryArithOpEvalRangeVisitorDispatcher(BinaryArithOpEvalRangeExpr& expr_raw) -> BitsetType;
 
     template <typename T>
     auto
@@ -230,8 +230,8 @@ ExecExprVisitor::ExecUnaryRangeVisitorDispatcher(UnaryRangeExpr& expr_raw) -> Bi
 #pragma ide diagnostic ignored "Simplify"
 template <typename T>
 auto
-ExecExprVisitor::ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnaryRangeExpr& expr_raw) -> BitsetType {
-    auto& expr = static_cast<BinaryArithOpUnaryRangeExprImpl<T>&>(expr_raw);
+ExecExprVisitor::ExecBinaryArithOpEvalRangeVisitorDispatcher(BinaryArithOpEvalRangeExpr& expr_raw) -> BitsetType {
+    auto& expr = static_cast<BinaryArithOpEvalRangeExprImpl<T>&>(expr_raw);
     using Index = scalar::ScalarIndex<T>;
     auto arith_op = expr.arith_op_;
     auto right_operand = expr.right_operand_;
@@ -429,34 +429,34 @@ ExecExprVisitor::visit(UnaryRangeExpr& expr) {
 }
 
 void
-ExecExprVisitor::visit(BinaryArithOpUnaryRangeExpr& expr) {
+ExecExprVisitor::visit(BinaryArithOpEvalRangeExpr& expr) {
     auto& field_meta = segment_.get_schema()[expr.field_offset_];
     AssertInfo(expr.data_type_ == field_meta.get_data_type(),
                "[ExecExprVisitor]DataType of expr isn't field_meta data type");
     BitsetType res;
     switch (expr.data_type_) {
         case DataType::INT8: {
-            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<int8_t>(expr);
+            res = ExecBinaryArithOpEvalRangeVisitorDispatcher<int8_t>(expr);
             break;
         }
         case DataType::INT16: {
-            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<int16_t>(expr);
+            res = ExecBinaryArithOpEvalRangeVisitorDispatcher<int16_t>(expr);
             break;
         }
         case DataType::INT32: {
-            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<int32_t>(expr);
+            res = ExecBinaryArithOpEvalRangeVisitorDispatcher<int32_t>(expr);
             break;
         }
         case DataType::INT64: {
-            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<int64_t>(expr);
+            res = ExecBinaryArithOpEvalRangeVisitorDispatcher<int64_t>(expr);
             break;
         }
         case DataType::FLOAT: {
-            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<float>(expr);
+            res = ExecBinaryArithOpEvalRangeVisitorDispatcher<float>(expr);
             break;
         }
         case DataType::DOUBLE: {
-            res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<double>(expr);
+            res = ExecBinaryArithOpEvalRangeVisitorDispatcher<double>(expr);
             break;
         }
         default:

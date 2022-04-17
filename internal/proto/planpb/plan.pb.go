@@ -769,7 +769,7 @@ func (m *BinaryArithOp) GetRightOperand() *GenericValue {
 	return nil
 }
 
-type BinaryArithOpUnaryRangeExpr struct {
+type BinaryArithOpEvalRangeExpr struct {
 	ColumnInfo           *ColumnInfo   `protobuf:"bytes,1,opt,name=column_info,json=columnInfo,proto3" json:"column_info,omitempty"`
 	ArithOp              ArithOpType   `protobuf:"varint,2,opt,name=arith_op,json=arithOp,proto3,enum=milvus.proto.plan.ArithOpType" json:"arith_op,omitempty"`
 	RightOperand         *GenericValue `protobuf:"bytes,3,opt,name=right_operand,json=rightOperand,proto3" json:"right_operand,omitempty"`
@@ -780,60 +780,60 @@ type BinaryArithOpUnaryRangeExpr struct {
 	XXX_sizecache        int32         `json:"-"`
 }
 
-func (m *BinaryArithOpUnaryRangeExpr) Reset()         { *m = BinaryArithOpUnaryRangeExpr{} }
-func (m *BinaryArithOpUnaryRangeExpr) String() string { return proto.CompactTextString(m) }
-func (*BinaryArithOpUnaryRangeExpr) ProtoMessage()    {}
-func (*BinaryArithOpUnaryRangeExpr) Descriptor() ([]byte, []int) {
+func (m *BinaryArithOpEvalRangeExpr) Reset()         { *m = BinaryArithOpEvalRangeExpr{} }
+func (m *BinaryArithOpEvalRangeExpr) String() string { return proto.CompactTextString(m) }
+func (*BinaryArithOpEvalRangeExpr) ProtoMessage()    {}
+func (*BinaryArithOpEvalRangeExpr) Descriptor() ([]byte, []int) {
 	return fileDescriptor_2d655ab2f7683c23, []int{10}
 }
 
-func (m *BinaryArithOpUnaryRangeExpr) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_BinaryArithOpUnaryRangeExpr.Unmarshal(m, b)
+func (m *BinaryArithOpEvalRangeExpr) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_BinaryArithOpEvalRangeExpr.Unmarshal(m, b)
 }
-func (m *BinaryArithOpUnaryRangeExpr) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_BinaryArithOpUnaryRangeExpr.Marshal(b, m, deterministic)
+func (m *BinaryArithOpEvalRangeExpr) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_BinaryArithOpEvalRangeExpr.Marshal(b, m, deterministic)
 }
-func (m *BinaryArithOpUnaryRangeExpr) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_BinaryArithOpUnaryRangeExpr.Merge(m, src)
+func (m *BinaryArithOpEvalRangeExpr) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BinaryArithOpEvalRangeExpr.Merge(m, src)
 }
-func (m *BinaryArithOpUnaryRangeExpr) XXX_Size() int {
-	return xxx_messageInfo_BinaryArithOpUnaryRangeExpr.Size(m)
+func (m *BinaryArithOpEvalRangeExpr) XXX_Size() int {
+	return xxx_messageInfo_BinaryArithOpEvalRangeExpr.Size(m)
 }
-func (m *BinaryArithOpUnaryRangeExpr) XXX_DiscardUnknown() {
-	xxx_messageInfo_BinaryArithOpUnaryRangeExpr.DiscardUnknown(m)
+func (m *BinaryArithOpEvalRangeExpr) XXX_DiscardUnknown() {
+	xxx_messageInfo_BinaryArithOpEvalRangeExpr.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_BinaryArithOpUnaryRangeExpr proto.InternalMessageInfo
+var xxx_messageInfo_BinaryArithOpEvalRangeExpr proto.InternalMessageInfo
 
-func (m *BinaryArithOpUnaryRangeExpr) GetColumnInfo() *ColumnInfo {
+func (m *BinaryArithOpEvalRangeExpr) GetColumnInfo() *ColumnInfo {
 	if m != nil {
 		return m.ColumnInfo
 	}
 	return nil
 }
 
-func (m *BinaryArithOpUnaryRangeExpr) GetArithOp() ArithOpType {
+func (m *BinaryArithOpEvalRangeExpr) GetArithOp() ArithOpType {
 	if m != nil {
 		return m.ArithOp
 	}
 	return ArithOpType_Add
 }
 
-func (m *BinaryArithOpUnaryRangeExpr) GetRightOperand() *GenericValue {
+func (m *BinaryArithOpEvalRangeExpr) GetRightOperand() *GenericValue {
 	if m != nil {
 		return m.RightOperand
 	}
 	return nil
 }
 
-func (m *BinaryArithOpUnaryRangeExpr) GetOp() OpType {
+func (m *BinaryArithOpEvalRangeExpr) GetOp() OpType {
 	if m != nil {
 		return m.Op
 	}
 	return OpType_Invalid
 }
 
-func (m *BinaryArithOpUnaryRangeExpr) GetValue() *GenericValue {
+func (m *BinaryArithOpEvalRangeExpr) GetValue() *GenericValue {
 	if m != nil {
 		return m.Value
 	}
@@ -848,7 +848,7 @@ type Expr struct {
 	//	*Expr_CompareExpr
 	//	*Expr_UnaryRangeExpr
 	//	*Expr_BinaryRangeExpr
-	//	*Expr_BinaryArithOpUnaryRangeExpr
+	//	*Expr_BinaryArithOpEvalRangeExpr
 	Expr                 isExpr_Expr `protobuf_oneof:"expr"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
 	XXX_unrecognized     []byte      `json:"-"`
@@ -908,8 +908,8 @@ type Expr_BinaryRangeExpr struct {
 	BinaryRangeExpr *BinaryRangeExpr `protobuf:"bytes,6,opt,name=binary_range_expr,json=binaryRangeExpr,proto3,oneof"`
 }
 
-type Expr_BinaryArithOpUnaryRangeExpr struct {
-	BinaryArithOpUnaryRangeExpr *BinaryArithOpUnaryRangeExpr `protobuf:"bytes,7,opt,name=binary_arith_op_unary_range_expr,json=binaryArithOpUnaryRangeExpr,proto3,oneof"`
+type Expr_BinaryArithOpEvalRangeExpr struct {
+	BinaryArithOpEvalRangeExpr *BinaryArithOpEvalRangeExpr `protobuf:"bytes,7,opt,name=binary_arith_op_eval_range_expr,json=binaryArithOpUnaryRangeExpr,proto3,oneof"`
 }
 
 func (*Expr_TermExpr) isExpr_Expr() {}
@@ -924,7 +924,7 @@ func (*Expr_UnaryRangeExpr) isExpr_Expr() {}
 
 func (*Expr_BinaryRangeExpr) isExpr_Expr() {}
 
-func (*Expr_BinaryArithOpUnaryRangeExpr) isExpr_Expr() {}
+func (*Expr_BinaryArithOpEvalRangeExpr) isExpr_Expr() {}
 
 func (m *Expr) GetExpr() isExpr_Expr {
 	if m != nil {
@@ -975,9 +975,9 @@ func (m *Expr) GetBinaryRangeExpr() *BinaryRangeExpr {
 	return nil
 }
 
-func (m *Expr) GetBinaryArithOpUnaryRangeExpr() *BinaryArithOpUnaryRangeExpr {
-	if x, ok := m.GetExpr().(*Expr_BinaryArithOpUnaryRangeExpr); ok {
-		return x.BinaryArithOpUnaryRangeExpr
+func (m *Expr) GetBinaryArithOpEvalRangeExpr() *BinaryArithOpEvalRangeExpr {
+	if x, ok := m.GetExpr().(*Expr_BinaryArithOpEvalRangeExpr); ok {
+		return x.BinaryArithOpEvalRangeExpr
 	}
 	return nil
 }
@@ -991,7 +991,7 @@ func (*Expr) XXX_OneofWrappers() []interface{} {
 		(*Expr_CompareExpr)(nil),
 		(*Expr_UnaryRangeExpr)(nil),
 		(*Expr_BinaryRangeExpr)(nil),
-		(*Expr_BinaryArithOpUnaryRangeExpr)(nil),
+		(*Expr_BinaryArithOpEvalRangeExpr)(nil),
 	}
 }
 
@@ -1169,7 +1169,7 @@ func init() {
 	proto.RegisterType((*UnaryExpr)(nil), "milvus.proto.plan.UnaryExpr")
 	proto.RegisterType((*BinaryExpr)(nil), "milvus.proto.plan.BinaryExpr")
 	proto.RegisterType((*BinaryArithOp)(nil), "milvus.proto.plan.BinaryArithOp")
-	proto.RegisterType((*BinaryArithOpUnaryRangeExpr)(nil), "milvus.proto.plan.BinaryArithOpUnaryRangeExpr")
+	proto.RegisterType((*BinaryArithOpEvalRangeExpr)(nil), "milvus.proto.plan.BinaryArithOpEvalRangeExpr")
 	proto.RegisterType((*Expr)(nil), "milvus.proto.plan.Expr")
 	proto.RegisterType((*VectorANNS)(nil), "milvus.proto.plan.VectorANNS")
 	proto.RegisterType((*PlanNode)(nil), "milvus.proto.plan.PlanNode")

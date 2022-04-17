@@ -250,16 +250,16 @@ ShowExprVisitor::visit(CompareExpr& expr) {
 
 template <typename T>
 static Json
-BinaryArithOpUnaryRangeExtract(const BinaryArithOpUnaryRangeExpr& expr_raw) {
+BinaryArithOpEvalRangeExtract(const BinaryArithOpEvalRangeExpr& expr_raw) {
     using proto::plan::OpType;
     using proto::plan::OpType_Name;
     using proto::plan::ArithOpType;
     using proto::plan::ArithOpType_Name;
 
-    auto expr = dynamic_cast<const BinaryArithOpUnaryRangeExprImpl<T>*>(&expr_raw);
-    AssertInfo(expr, "[ShowExprVisitor]BinaryArithOpUnaryRangeExpr cast to BinaryArithOpUnaryRangeExprImpl failed");
+    auto expr = dynamic_cast<const BinaryArithOpEvalRangeExprImpl<T>*>(&expr_raw);
+    AssertInfo(expr, "[ShowExprVisitor]BinaryArithOpEvalRangeExpr cast to BinaryArithOpEvalRangeExprImpl failed");
 
-    Json res{{"expr_type", "BinaryArithOpUnaryRange"},
+    Json res{{"expr_type", "BinaryArithOpEvalRange"},
              {"field_offset", expr->field_offset_.get()},
              {"data_type", datatype_name(expr->data_type_)},
              {"arith_op", ArithOpType_Name(static_cast<ArithOpType>(expr->arith_op_))},
@@ -270,30 +270,30 @@ BinaryArithOpUnaryRangeExtract(const BinaryArithOpUnaryRangeExpr& expr_raw) {
 }
 
 void
-ShowExprVisitor::visit(BinaryArithOpUnaryRangeExpr& expr) {
+ShowExprVisitor::visit(BinaryArithOpEvalRangeExpr& expr) {
     AssertInfo(!json_opt_.has_value(), "[ShowExprVisitor]Ret json already has value before visit");
     AssertInfo(datatype_is_vector(expr.data_type_) == false, "[ShowExprVisitor]Data type of expr isn't vector type");
     switch (expr.data_type_) {
         case DataType::BOOL:
-            json_opt_ = BinaryArithOpUnaryRangeExtract<bool>(expr);
+            json_opt_ = BinaryArithOpEvalRangeExtract<bool>(expr);
             return;
         case DataType::INT8:
-            json_opt_ = BinaryArithOpUnaryRangeExtract<int8_t>(expr);
+            json_opt_ = BinaryArithOpEvalRangeExtract<int8_t>(expr);
             return;
         case DataType::INT16:
-            json_opt_ = BinaryArithOpUnaryRangeExtract<int16_t>(expr);
+            json_opt_ = BinaryArithOpEvalRangeExtract<int16_t>(expr);
             return;
         case DataType::INT32:
-            json_opt_ = BinaryArithOpUnaryRangeExtract<int32_t>(expr);
+            json_opt_ = BinaryArithOpEvalRangeExtract<int32_t>(expr);
             return;
         case DataType::INT64:
-            json_opt_ = BinaryArithOpUnaryRangeExtract<int64_t>(expr);
+            json_opt_ = BinaryArithOpEvalRangeExtract<int64_t>(expr);
             return;
         case DataType::DOUBLE:
-            json_opt_ = BinaryArithOpUnaryRangeExtract<double>(expr);
+            json_opt_ = BinaryArithOpEvalRangeExtract<double>(expr);
             return;
         case DataType::FLOAT:
-            json_opt_ = BinaryArithOpUnaryRangeExtract<float>(expr);
+            json_opt_ = BinaryArithOpEvalRangeExtract<float>(expr);
             return;
         default:
             PanicInfo("unsupported type");

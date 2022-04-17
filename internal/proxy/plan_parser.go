@@ -440,8 +440,8 @@ func (pc *parserContext) createBinaryArithOpCmpExpr(left *ant_ast.FunctionNode, 
 		val, err := pc.handleLeafValue(right, binArithOp.ColumnInfo.DataType)
 
 		expr := &planpb.Expr{
-			Expr: &planpb.Expr_BinaryArithOpUnaryRangeExpr{
-				BinaryArithOpUnaryRangeExpr: &planpb.BinaryArithOpUnaryRangeExpr{
+			Expr: &planpb.Expr_BinaryArithOpEvalRangeExpr{
+				BinaryArithOpEvalRangeExpr: &planpb.BinaryArithOpEvalRangeExpr{
 					ColumnInfo:   binArithOp.ColumnInfo,
 					ArithOp:      binArithOp.ArithOp,
 					RightOperand: binArithOp.RightOperand,
