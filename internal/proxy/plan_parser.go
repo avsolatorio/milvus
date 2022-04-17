@@ -111,6 +111,12 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 				patch(&ant_ast.FunctionNode{Name: "sub", Arguments: []ant_ast.Node{identifierNodeLeft, floatNodeRight}})
 			} else if leftIdentifier && rightInteger {
 				patch(&ant_ast.FunctionNode{Name: "sub", Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
+			} else if leftFloat && rightIdentifier {
+				optimizer.err = fmt.Errorf("field as right operand is not yet supported for (%s) operator", node.Operator)
+				return
+			} else if leftInteger && rightIdentifier {
+				optimizer.err = fmt.Errorf("field as right operand is not yet supported for (%s) operator", node.Operator)
+				return
 			} else {
 				optimizer.err = fmt.Errorf("invalid data type")
 				return
@@ -173,6 +179,12 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 					return
 				}
 				patch(&ant_ast.FunctionNode{Name: "div", Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
+			} else if leftFloat && rightIdentifier {
+				optimizer.err = fmt.Errorf("field as right operand is not yet supported for (%s) operator", node.Operator)
+				return
+			} else if leftInteger && rightIdentifier {
+				optimizer.err = fmt.Errorf("field as right operand is not yet supported for (%s) operator", node.Operator)
+				return
 			} else {
 				optimizer.err = fmt.Errorf("invalid data type")
 				return
@@ -190,6 +202,9 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 					return
 				}
 				patch(&ant_ast.FunctionNode{Name: "mod", Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
+			} else if leftInteger && rightIdentifier {
+				optimizer.err = fmt.Errorf("field as right operand is not yet supported for (%s) operator", node.Operator)
+				return
 			} else {
 				optimizer.err = fmt.Errorf("invalid data type")
 				return
