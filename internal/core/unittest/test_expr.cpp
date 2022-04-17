@@ -740,6 +740,20 @@ TEST(Expr, TestBinaryArithOpEvalRangeExceptions) {
                 "value": 2500.0
             }
         })", "Assert \"(right_operand.is_number())\"", DataType::FLOAT},
+        // Check unsupported arithmetic operator type
+        {R"("EQ": {
+            "EXP": {
+                "right_operand": 500,
+                "value": 2500
+            }
+        })", "arith op(exp) not found", DataType::INT32},
+        // Check unsupported data type
+        {R"("EQ": {
+            "ADD": {
+                "right_operand": true,
+                "value": false
+            }
+        })", "unsupported type", DataType::BOOL},
     };
 
     std::string dsl_string_tmp = R"({
@@ -777,10 +791,16 @@ TEST(Expr, TestBinaryArithOpEvalRangeExceptions) {
             @@@@
         })";
 
+    std::string dsl_string_bool = R"(
+        "BoolField": {
+            @@@@
+        })";
+
     auto schema = std::make_shared<Schema>();
     schema->AddDebugField("fakevec", DataType::VECTOR_FLOAT, 16, MetricType::METRIC_L2);
     schema->AddDebugField("age", DataType::INT32);
     schema->AddDebugField("FloatN", DataType::FLOAT);
+    schema->AddDebugField("BoolField", DataType::BOOL);
 
     for (auto [clause, assert_info, dtype] : testcases) {
         auto loc = dsl_string_tmp.find("@@@@@");
@@ -789,11 +809,13 @@ TEST(Expr, TestBinaryArithOpEvalRangeExceptions) {
             dsl_string.replace(loc, 5, dsl_string_int);
         } else if (dtype == DataType::FLOAT) {
             dsl_string.replace(loc, 5, dsl_string_num);
+        } else if (dtype == DataType::BOOL) {
+            dsl_string.replace(loc, 5, dsl_string_bool);
         } else {
-            ASSERT_TRUE(false) << "Unsupported data type";
+            ASSERT_TRUE(false) << "No test case defined for data type " << dtype;
         }
 
-        auto loc = dsl_string.find("@@@@");
+        loc = dsl_string.find("@@@@");
         dsl_string.replace(loc, 4, clause);
 
         try {
