@@ -169,7 +169,7 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
             }
             bitset->set(lb->idx_);
         }
-    } else if (arith_op = "mod") {
+    } else if (arith_op == "mod") {
         // Since there's is no inverse for the modulo operator, we can't use the same logic as for the other operations.
         // This means that we need to do a full scan of the data.
         for (; lb < ub; ++lb) {
@@ -267,7 +267,7 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
             }
             bitset->reset(lb->idx_);
         }
-    } else if (arith_op = "mod") {
+    } else if (arith_op == "mod") {
         // Since there's is no inverse for the modulo operator, we can't use the same logic as for the other operations.
         // This means that we need to do a full scan of the data.
         for (; lb < ub; ++lb) {
