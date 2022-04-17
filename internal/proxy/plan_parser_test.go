@@ -344,8 +344,8 @@ func TestExprBinaryArithOp_Str(t *testing.T) {
 		// Allow for commutative property for + and *
 		"(6 + age1) != 2",
 		"(age1 * 4) != 9",
-		"(5 * floatN) != 0",
-		"(9 * floatN) != 0",
+		"(5 * FloatN) != 0",
+		"(9 * FloatN) != 0",
 	}
 
 	unsupportedExprStrs := []string{
