@@ -75,9 +75,14 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 		// Check IdentifierNodes
 		identifierNodeLeft, leftIdentifier := node.Left.(*ant_ast.IdentifierNode)
 		identifierNodeRight, rightIdentifier := node.Right.(*ant_ast.IdentifierNode)
+		funcName, err := getFuncNameByNodeOp(node.Operator)
 
 		switch node.Operator {
 		case "+":
+			if err != nil {
+				optimizer.err = err
+				return
+			}
 			if leftFloat && rightFloat {
 				patch(&ant_ast.FloatNode{Value: floatNodeLeft.Value + floatNodeRight.Value})
 			} else if leftFloat && rightInteger {
@@ -87,18 +92,22 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 			} else if leftInteger && rightInteger {
 				patch(&ant_ast.IntegerNode{Value: integerNodeLeft.Value + integerNodeRight.Value})
 			} else if leftIdentifier && rightFloat {
-				patch(&ant_ast.FunctionNode{Name: "add", Arguments: []ant_ast.Node{identifierNodeLeft, floatNodeRight}})
+				patch(&ant_ast.FunctionNode{Name: funcName, Arguments: []ant_ast.Node{identifierNodeLeft, floatNodeRight}})
 			} else if leftIdentifier && rightInteger {
-				patch(&ant_ast.FunctionNode{Name: "add", Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
+				patch(&ant_ast.FunctionNode{Name: funcName, Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
 			} else if leftFloat && rightIdentifier {
-				patch(&ant_ast.FunctionNode{Name: "add", Arguments: []ant_ast.Node{identifierNodeRight, floatNodeLeft}})
+				patch(&ant_ast.FunctionNode{Name: funcName, Arguments: []ant_ast.Node{identifierNodeRight, floatNodeLeft}})
 			} else if leftInteger && rightIdentifier {
-				patch(&ant_ast.FunctionNode{Name: "add", Arguments: []ant_ast.Node{identifierNodeRight, integerNodeLeft}})
+				patch(&ant_ast.FunctionNode{Name: funcName, Arguments: []ant_ast.Node{identifierNodeRight, integerNodeLeft}})
 			} else {
 				optimizer.err = fmt.Errorf("invalid data type")
 				return
 			}
 		case "-":
+			if err != nil {
+				optimizer.err = err
+				return
+			}
 			if leftFloat && rightFloat {
 				patch(&ant_ast.FloatNode{Value: floatNodeLeft.Value - floatNodeRight.Value})
 			} else if leftFloat && rightInteger {
@@ -108,9 +117,9 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 			} else if leftInteger && rightInteger {
 				patch(&ant_ast.IntegerNode{Value: integerNodeLeft.Value - integerNodeRight.Value})
 			} else if leftIdentifier && rightFloat {
-				patch(&ant_ast.FunctionNode{Name: "sub", Arguments: []ant_ast.Node{identifierNodeLeft, floatNodeRight}})
+				patch(&ant_ast.FunctionNode{Name: funcName, Arguments: []ant_ast.Node{identifierNodeLeft, floatNodeRight}})
 			} else if leftIdentifier && rightInteger {
-				patch(&ant_ast.FunctionNode{Name: "sub", Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
+				patch(&ant_ast.FunctionNode{Name: funcName, Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
 			} else if leftFloat && rightIdentifier {
 				optimizer.err = fmt.Errorf("field as right operand is not yet supported for (%s) operator", node.Operator)
 				return
@@ -122,6 +131,10 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 				return
 			}
 		case "*":
+			if err != nil {
+				optimizer.err = err
+				return
+			}
 			if leftFloat && rightFloat {
 				patch(&ant_ast.FloatNode{Value: floatNodeLeft.Value * floatNodeRight.Value})
 			} else if leftFloat && rightInteger {
@@ -131,18 +144,22 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 			} else if leftInteger && rightInteger {
 				patch(&ant_ast.IntegerNode{Value: integerNodeLeft.Value * integerNodeRight.Value})
 			} else if leftIdentifier && rightFloat {
-				patch(&ant_ast.FunctionNode{Name: "mul", Arguments: []ant_ast.Node{identifierNodeLeft, floatNodeRight}})
+				patch(&ant_ast.FunctionNode{Name: funcName, Arguments: []ant_ast.Node{identifierNodeLeft, floatNodeRight}})
 			} else if leftIdentifier && rightInteger {
-				patch(&ant_ast.FunctionNode{Name: "mul", Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
+				patch(&ant_ast.FunctionNode{Name: funcName, Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
 			} else if leftFloat && rightIdentifier {
-				patch(&ant_ast.FunctionNode{Name: "mul", Arguments: []ant_ast.Node{identifierNodeRight, floatNodeLeft}})
+				patch(&ant_ast.FunctionNode{Name: funcName, Arguments: []ant_ast.Node{identifierNodeRight, floatNodeLeft}})
 			} else if leftInteger && rightIdentifier {
-				patch(&ant_ast.FunctionNode{Name: "mul", Arguments: []ant_ast.Node{identifierNodeRight, integerNodeLeft}})
+				patch(&ant_ast.FunctionNode{Name: funcName, Arguments: []ant_ast.Node{identifierNodeRight, integerNodeLeft}})
 			} else {
 				optimizer.err = fmt.Errorf("invalid data type")
 				return
 			}
 		case "/":
+			if err != nil {
+				optimizer.err = err
+				return
+			}
 			if leftFloat && rightFloat {
 				if floatNodeRight.Value == 0 {
 					optimizer.err = fmt.Errorf("divide by zero")
@@ -172,13 +189,13 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 					optimizer.err = fmt.Errorf("divide by zero")
 					return
 				}
-				patch(&ant_ast.FunctionNode{Name: "div", Arguments: []ant_ast.Node{identifierNodeLeft, floatNodeRight}})
+				patch(&ant_ast.FunctionNode{Name: funcName, Arguments: []ant_ast.Node{identifierNodeLeft, floatNodeRight}})
 			} else if leftIdentifier && rightInteger {
 				if integerNodeRight.Value == 0 {
 					optimizer.err = fmt.Errorf("divide by zero")
 					return
 				}
-				patch(&ant_ast.FunctionNode{Name: "div", Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
+				patch(&ant_ast.FunctionNode{Name: funcName, Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
 			} else if leftFloat && rightIdentifier {
 				optimizer.err = fmt.Errorf("field as right operand is not yet supported for (%s) operator", node.Operator)
 				return
@@ -190,6 +207,10 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 				return
 			}
 		case "%":
+			if err != nil {
+				optimizer.err = err
+				return
+			}
 			if leftInteger && rightInteger {
 				if integerNodeRight.Value == 0 {
 					optimizer.err = fmt.Errorf("modulo by zero")
@@ -201,7 +222,7 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 					optimizer.err = fmt.Errorf("modulo by zero")
 					return
 				}
-				patch(&ant_ast.FunctionNode{Name: "mod", Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
+				patch(&ant_ast.FunctionNode{Name: funcName, Arguments: []ant_ast.Node{identifierNodeLeft, integerNodeRight}})
 			} else if leftInteger && rightIdentifier {
 				optimizer.err = fmt.Errorf("field as right operand is not yet supported for (%s) operator", node.Operator)
 				return
@@ -329,6 +350,26 @@ func getArithOpType(funcName string) (planpb.ArithOpType, error) {
 		return op, fmt.Errorf("invalid arith op type: %s", funcName)
 	}
 	return op, nil
+}
+
+func getFuncNameByNodeOp(nodeOp string) (string, error) {
+	var funcName string
+
+	switch nodeOp {
+	case "+":
+		funcName = "add"
+	case "-":
+		funcName = "sub"
+	case "*":
+		funcName = "mul"
+	case "/":
+		funcName = "div"
+	case "%":
+		funcName = "mod"
+	default:
+		return funcName, fmt.Errorf("no defined funcName assigned to nodeOp: %s", nodeOp)
+	}
+	return funcName, nil
 }
 
 func parseBoolNode(nodeRaw *ant_ast.Node) *ant_ast.BoolNode {
