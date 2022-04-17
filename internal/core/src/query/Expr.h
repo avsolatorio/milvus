@@ -127,6 +127,13 @@ static const std::map<std::string, ArithOpType> arith_op_mapping_ = {
     {"sub", ArithOpType::Sub},
 };
 
+static const std::map<ArithOpType, std::string> mapping_arith_op_ = {
+    // arith_op_name -> arith_op
+    {ArithOpType::Add, "add"},    {ArithOpType::Div, "div"},
+    {ArithOpType::Mul, "mul"},    {ArithOpType::Mod, "mod"},
+    {ArithOpType::Sub, "sub"},
+};
+
 struct BinaryArithOpUnaryRangeExpr : Expr {
     const FieldOffset field_offset_;
     const DataType data_type_;
