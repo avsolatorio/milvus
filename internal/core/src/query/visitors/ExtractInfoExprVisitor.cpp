@@ -60,7 +60,7 @@ ExtractInfoExprVisitor::visit(CompareExpr& expr) {
 }
 
 void
-ExtractInfoExprVisitor::visit(EvalArithmeticOperationExpr& expr) {
+ExtractInfoExprVisitor::visit(BinaryArithOpUnaryRangeExpr& expr) {
     plan_info_.add_involved_field(expr.field_offset_);
 }
 

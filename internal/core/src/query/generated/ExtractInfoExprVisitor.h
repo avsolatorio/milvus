@@ -31,7 +31,7 @@ class ExtractInfoExprVisitor : public ExprVisitor {
     visit(UnaryRangeExpr& expr) override;
 
     void
-    visit(EvalArithmeticOperationExpr& expr) override;
+    visit(BinaryArithOpUnaryRangeExpr& expr) override;
 
     void
     visit(BinaryRangeExpr& expr) override;

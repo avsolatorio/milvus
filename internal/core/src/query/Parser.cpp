@@ -298,7 +298,7 @@ Parser::ParseRangeNodeImpl(const FieldName& field_name, const Json& body) {
                 static_assert(always_false<T>, "unsupported type");
             }
 
-            return std::make_unique<EvalArithmeticOperationExprImpl<T>>(schema.get_offset(field_name),
+            return std::make_unique<BinaryArithOpUnaryRangeExprImpl<T>>(schema.get_offset(field_name),
                                                                         schema[field_name].get_data_type(),
                                                                         arith_op_mapping_.at(arith_op_name),
                                                                         right_operand,

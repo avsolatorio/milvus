@@ -250,14 +250,14 @@ ShowExprVisitor::visit(CompareExpr& expr) {
 
 template <typename T>
 static Json
-BinaryArithOpUnaryRangeExtract(const EvalArithmeticOperationExpr& expr_raw) {
+BinaryArithOpUnaryRangeExtract(const BinaryArithOpUnaryRangeExpr& expr_raw) {
     using proto::plan::OpType;
     using proto::plan::OpType_Name;
     using proto::plan::ArithOpType;
     using proto::plan::ArithOpType_Name;
 
-    auto expr = dynamic_cast<const EvalArithmeticOperationExprImpl<T>*>(&expr_raw);
-    AssertInfo(expr, "[ShowExprVisitor]EvalArithmeticOperationExpr cast to EvalArithmeticOperationExprImpl failed");
+    auto expr = dynamic_cast<const BinaryArithOpUnaryRangeExprImpl<T>*>(&expr_raw);
+    AssertInfo(expr, "[ShowExprVisitor]BinaryArithOpUnaryRangeExpr cast to BinaryArithOpUnaryRangeExprImpl failed");
 
     Json res{{"expr_type", "BinaryArithOpUnaryRange"},
              {"field_offset", expr->field_offset_.get()},
@@ -270,7 +270,7 @@ BinaryArithOpUnaryRangeExtract(const EvalArithmeticOperationExpr& expr_raw) {
 }
 
 void
-ShowExprVisitor::visit(EvalArithmeticOperationExpr& expr) {
+ShowExprVisitor::visit(BinaryArithOpUnaryRangeExpr& expr) {
     AssertInfo(!json_opt_.has_value(), "[ShowExprVisitor]Ret json already has value before visit");
     AssertInfo(datatype_is_vector(expr.data_type_) == false, "[ShowExprVisitor]Data type of expr isn't vector type");
     switch (expr.data_type_) {

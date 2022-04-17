@@ -36,7 +36,7 @@ UnaryRangeExpr::accept(ExprVisitor& visitor) {
 }
 
 void
-EvalArithmeticOperationExpr::accept(ExprVisitor& visitor) {
+BinaryArithOpUnaryRangeExpr::accept(ExprVisitor& visitor) {
     visitor.visit(*this);
 }
 void
