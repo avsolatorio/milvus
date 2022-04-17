@@ -332,8 +332,36 @@ func TestExprFieldCompare_Str(t *testing.T) {
 
 func TestExprBinaryArithOp_Str(t *testing.T) {
 	exprStrs := []string{
-		"(age1 % 5) == 3",
-		"(age1 % 5) != 2",
+		// Basic arithmetic
+		"(age1 + 5) == 2",
+		// Float data type
+		"(FloatN - 5.2) == 0",
+		// Other operators
+		"(age1 - 5) == 1",
+		"(age1 * 5) == 6",
+		"(age1 / 5) == 1",
+		"(age1 % 5) == 0",
+		// Allow for commutative property for + and *
+		"(6 + age1) != 2",
+		"(age1 * 4) != 9",
+		"(5 * floatN) != 0",
+		"(9 * floatN) != 0",
+	}
+
+	unsupportedExprStrs := []string{
+		// Comparison operators except for "==" and "!=" are unsupported
+		"(age1 + 2) > 4",
+		"(age1 + 2) >= 4",
+		"(age1 + 2) < 4",
+		"(age1 + 2) <= 4",
+		// Functional nodes at the right of the comparison are not allowed
+		"0 == (age1 + 3)",
+		// Field as the right operand for -, /, and % operators are not supported
+		"(10 - age1) == 0",
+		"(20 / age1) == 0",
+		"(30 % age1) == 0",
+		// Modulo is not supported in the parser but the engine can handle it since fmod is used
+		"(FloatN % 2.1) == 0",
 	}
 
 	fields := []*schemapb.FieldSchema{
@@ -361,7 +389,13 @@ func TestExprBinaryArithOp_Str(t *testing.T) {
 		assert.Nil(t, err)
 		dbgStr := proto.MarshalTextString(planProto)
 		println(dbgStr)
-
+	}
+	for offset, exprStr := range unsupportedExprStrs {
+		fmt.Printf("case %d: %s\n", offset, exprStr)
+		planProto, err := createQueryPlan(schema, exprStr, "fakevec", queryInfo)
+		assert.Error(t, err)
+		dbgStr := proto.MarshalTextString(planProto)
+		println(dbgStr)
 	}
 }
 
