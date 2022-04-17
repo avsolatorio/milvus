@@ -126,10 +126,10 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
     auto lb = data_.begin();
     auto ub = data_.end();
 
-    switch (arith_op) {
     // For "add", "sub", "mul", and "div", we can use the lower_bound and upper_bound methods to limit the search range.
     // Note that we need to perform the inverse operations on the bounds to get the correct results.
-    case "add":
+    // NOTE: read about the modulo operator below.
+    if (arith_op == "add") {
         lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
         ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
         for (; lb < ub; ++lb) {
@@ -139,8 +139,7 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
             }
             bitset->set(lb->idx_);
         }
-        break;
-    case "sub":
+    } else if (arith_op == "sub") {
         lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
         ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
         for (; lb < ub; ++lb) {
@@ -150,8 +149,7 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
             }
             bitset->set(lb->idx_);
         }
-        break;
-    case "mul":
+    } else if (arith_op == "mul") {
         lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
         ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
         for (; lb < ub; ++lb) {
@@ -161,8 +159,7 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
             }
             bitset->set(lb->idx_);
         }
-        break;
-    case "div":
+    } else if (arith_op == "div") {
         lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
         ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
         for (; lb < ub; ++lb) {
@@ -172,8 +169,7 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
             }
             bitset->set(lb->idx_);
         }
-        break;
-    case "mod":
+    } else if (arith_op = "mod") {
         // Since there's is no inverse for the modulo operator, we can't use the same logic as for the other operations.
         // This means that we need to do a full scan of the data.
         for (; lb < ub; ++lb) {
@@ -181,10 +177,8 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
                 bitset->set(lb->idx_);
             }
         }
-        break;
-    default:
+    } else {
         throw std::invalid_argument("ScalarIndexSort::EvalIn: invalid arith_op");
-        break;
     }
     return bitset;
 
@@ -230,10 +224,10 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
     auto lb = data_.begin();
     auto ub = data_.end();
 
-    switch (arith_op) {
     // For "add", "sub", "mul", and "div", we can use the lower_bound and upper_bound methods to limit the search range.
     // Note that we need to perform the inverse operations on the bounds to get the correct results.
-    case "add":
+    // NOTE: read about the modulo operator below.
+    if (arith_op == "add") {
         lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
         ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
         for (; lb < ub; ++lb) {
@@ -243,8 +237,7 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
             }
             bitset->reset(lb->idx_);
         }
-        break;
-    case "sub":
+    } else if (arith_op == "sub") {
         lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
         ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
         for (; lb < ub; ++lb) {
@@ -254,8 +247,7 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
             }
             bitset->reset(lb->idx_);
         }
-        break;
-    case "mul":
+    } else if (arith_op == "mul") {
         lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
         ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
         for (; lb < ub; ++lb) {
@@ -265,8 +257,7 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
             }
             bitset->reset(lb->idx_);
         }
-        break;
-    case "div":
+    } else if (arith_op == "div") {
         lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
         ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
         for (; lb < ub; ++lb) {
@@ -276,8 +267,7 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
             }
             bitset->reset(lb->idx_);
         }
-        break;
-    case "mod":
+    } else if (arith_op = "mod") {
         // Since there's is no inverse for the modulo operator, we can't use the same logic as for the other operations.
         // This means that we need to do a full scan of the data.
         for (; lb < ub; ++lb) {
@@ -285,10 +275,8 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
                 bitset->reset(lb->idx_);
             }
         }
-        break;
-    default:
+    } else {
         throw std::invalid_argument("ScalarIndexSort::EvalNotIn: invalid arith_op");
-        break;
     }
     return bitset;
 
