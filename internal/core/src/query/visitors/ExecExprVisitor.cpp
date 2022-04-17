@@ -431,7 +431,7 @@ ExecExprVisitor::visit(BinaryArithOpUnaryRangeExpr& expr) {
             break;
         }
         case DataType::FLOAT: {
-            if (expr.arith_op_type_ != ArithOpType::Mod) {
+            if (expr.arith_op_ != ArithOpType::Mod) {
                 res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<float>(expr);
                 break;
             } else {
@@ -439,7 +439,7 @@ ExecExprVisitor::visit(BinaryArithOpUnaryRangeExpr& expr) {
             }
         }
         case DataType::DOUBLE: {
-            if (expr.arith_op_type_ != ArithOpType::Mod) {
+            if (expr.arith_op_ != ArithOpType::Mod) {
                 res = ExecBinaryArithOpUnaryRangeVisitorDispatcher<double>(expr);
                 break;
             } else {
