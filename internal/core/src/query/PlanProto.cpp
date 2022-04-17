@@ -90,8 +90,8 @@ ExtractBinaryRangeExprImpl(FieldOffset field_offset, DataType data_type, const p
 }
 
 template <typename T>
-std::unique_ptr<BinaryArithOpUnaryRangeExprImpl<T>>
-ExtractBinaryArithOpUnaryRangeExprImpl(FieldOffset field_offset, DataType data_type, const planpb::BinaryArithOpUnaryRangeExpr& expr_proto) {
+std::unique_ptr<EvalArithmeticOperationExprImpl<T>>
+ExtractEvalArithmeticOperationExprImpl(FieldOffset field_offset, DataType data_type, const planpb::EvalArithmeticOperationExpr& expr_proto) {
     static_assert(std::is_fundamental_v<T>);
     auto getValue = [&](const auto& value_proto) -> T {
         if constexpr (std::is_same_v<T, bool>) {
@@ -107,7 +107,7 @@ ExtractBinaryArithOpUnaryRangeExprImpl(FieldOffset field_offset, DataType data_t
             static_assert(always_false<T>);
         }
     };
-    return std::make_unique<BinaryArithOpUnaryRangeExprImpl<T>>(
+    return std::make_unique<EvalArithmeticOperationExprImpl<T>>(
         field_offset, data_type,
         static_cast<ArithOpType>(expr_proto.arith_op()),
         getValue(expr_proto.right_operand()),
@@ -365,7 +365,7 @@ ProtoParser::ParseBinaryExpr(const proto::plan::BinaryExpr& expr_pb) {
 }
 
 ExprPtr
-ProtoParser::ParseBinaryArithOpUnaryRangeExpr(const proto::plan::BinaryArithOpUnaryRangeExpr& expr_pb) {
+ProtoParser::ParseEvalArithmeticOperationExpr(const proto::plan::EvalArithmeticOperationExpr& expr_pb) {
     auto& column_info = expr_pb.column_info();
     auto field_id = FieldId(column_info.field_id());
     auto field_offset = schema.get_offset(field_id);
@@ -375,25 +375,25 @@ ProtoParser::ParseBinaryArithOpUnaryRangeExpr(const proto::plan::BinaryArithOpUn
     auto result = [&]() -> ExprPtr {
         switch (data_type) {
             case DataType::BOOL: {
-                return ExtractBinaryArithOpUnaryRangeExprImpl<bool>(field_offset, data_type, expr_pb);
+                return ExtractEvalArithmeticOperationExprImpl<bool>(field_offset, data_type, expr_pb);
             }
             case DataType::INT8: {
-                return ExtractBinaryArithOpUnaryRangeExprImpl<int8_t>(field_offset, data_type, expr_pb);
+                return ExtractEvalArithmeticOperationExprImpl<int8_t>(field_offset, data_type, expr_pb);
             }
             case DataType::INT16: {
-                return ExtractBinaryArithOpUnaryRangeExprImpl<int16_t>(field_offset, data_type, expr_pb);
+                return ExtractEvalArithmeticOperationExprImpl<int16_t>(field_offset, data_type, expr_pb);
             }
             case DataType::INT32: {
-                return ExtractBinaryArithOpUnaryRangeExprImpl<int32_t>(field_offset, data_type, expr_pb);
+                return ExtractEvalArithmeticOperationExprImpl<int32_t>(field_offset, data_type, expr_pb);
             }
             case DataType::INT64: {
-                return ExtractBinaryArithOpUnaryRangeExprImpl<int64_t>(field_offset, data_type, expr_pb);
+                return ExtractEvalArithmeticOperationExprImpl<int64_t>(field_offset, data_type, expr_pb);
             }
             case DataType::FLOAT: {
-                return ExtractBinaryArithOpUnaryRangeExprImpl<float>(field_offset, data_type, expr_pb);
+                return ExtractEvalArithmeticOperationExprImpl<float>(field_offset, data_type, expr_pb);
             }
             case DataType::DOUBLE: {
-                return ExtractBinaryArithOpUnaryRangeExprImpl<double>(field_offset, data_type, expr_pb);
+                return ExtractEvalArithmeticOperationExprImpl<double>(field_offset, data_type, expr_pb);
             }
             default: {
                 PanicInfo("unsupported data type");
@@ -425,8 +425,8 @@ ProtoParser::ParseExpr(const proto::plan::Expr& expr_pb) {
         case ppe::kCompareExpr: {
             return ParseCompareExpr(expr_pb.compare_expr());
         }
-        case ppe::kBinaryArithOpUnaryRangeExpr: {
-            return ParseBinaryArithOpUnaryRangeExpr(expr_pb.binary_arith_op_unary_range_expr());
+        case ppe::kEvalArithmeticOperationExpr: {
+            return ParseEvalArithmeticOperationExpr(expr_pb.binary_arith_op_unary_range_expr());
         }
         default:
             PanicInfo("unsupported expr proto node");

@@ -50,7 +50,7 @@ class ExecExprVisitor : ExprVisitor {
 
     template <typename T>
     auto
-    ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnaryRangeExpr& expr_raw) -> BitsetType;
+    ExecBinaryArithOpUnaryRangeVisitorDispatcher(EvalArithmeticOperationExpr& expr_raw) -> BitsetType;
 
     template <typename T>
     auto
@@ -230,8 +230,8 @@ ExecExprVisitor::ExecUnaryRangeVisitorDispatcher(UnaryRangeExpr& expr_raw) -> Bi
 #pragma ide diagnostic ignored "Simplify"
 template <typename T>
 auto
-ExecExprVisitor::ExecBinaryArithOpUnaryRangeVisitorDispatcher(BinaryArithOpUnaryRangeExpr& expr_raw) -> BitsetType {
-    auto& expr = static_cast<BinaryArithOpUnaryRangeExprImpl<T>&>(expr_raw);
+ExecExprVisitor::ExecBinaryArithOpUnaryRangeVisitorDispatcher(EvalArithmeticOperationExpr& expr_raw) -> BitsetType {
+    auto& expr = static_cast<EvalArithmeticOperationExprImpl<T>&>(expr_raw);
     using Index = scalar::ScalarIndex<T>;
     auto arith_op = expr.arith_op_;
     auto right_operand = expr.right_operand_;
@@ -429,7 +429,7 @@ ExecExprVisitor::visit(UnaryRangeExpr& expr) {
 }
 
 void
-ExecExprVisitor::visit(BinaryArithOpUnaryRangeExpr& expr) {
+ExecExprVisitor::visit(EvalArithmeticOperationExpr& expr) {
     auto& field_meta = segment_.get_schema()[expr.field_offset_];
     AssertInfo(expr.data_type_ == field_meta.get_data_type(),
                "[ExecExprVisitor]DataType of expr isn't field_meta data type");

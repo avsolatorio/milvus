@@ -30,7 +30,7 @@ class ProtoParser {
     // ExprFromProto(const proto::plan::Expr& expr_proto);
 
     ExprPtr
-    ParseBinaryArithOpUnaryRangeExpr(const proto::plan::BinaryArithOpUnaryRangeExpr& expr_pb);
+    ParseEvalArithmeticOperationExpr(const proto::plan::EvalArithmeticOperationExpr& expr_pb);
 
     ExprPtr
     ParseUnaryRangeExpr(const proto::plan::UnaryRangeExpr& expr_pb);
