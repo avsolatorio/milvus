@@ -591,31 +591,31 @@ TEST(Expr, TestBinaryArithOpUnaryRange) {
             "ADD": {
                 "right_operand": 500,
                 "value": 3000
-            },
+            }
         })", [](int v) { return (v + 500) == 2500; }},
         {R"("EQ": {
             "SUB": {
                 "right_operand": 500,
                 "value": 1500
-            },
+            }
         })", [](int v) { return (v - 500) == 1500; }},
         {R"("EQ": {
             "MUL": {
                 "right_operand": 2,
                 "value": 4000
-            },
+            }
         })", [](int v) { return (v * 2) == 4000; }},
         {R"("EQ": {
             "DIV": {
                 "right_operand": 2,
                 "value": 1000
-            },
+            }
         })", [](int v) { return (v / 2) == 1000; }},
         {R"("EQ": {
             "MOD": {
                 "right_operand": 100,
                 "value": 0
-            },
+            }
         })", [](int v) { return (v % 2) == 0; }},
     };
 
