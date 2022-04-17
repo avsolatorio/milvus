@@ -590,7 +590,7 @@ TEST(Expr, TestBinaryArithOpUnaryRange) {
         {R"("EQ": {
             "ADD": {
                 "right_operand": 500,
-                "value": 3000
+                "value": 2500
             }
         })", [](int v) { return (v + 500) == 2500; }},
         {R"("EQ": {
