@@ -118,7 +118,7 @@ ScalarIndexSort<T>::In(const size_t n, const T* values) {
 
 template <typename T>
 inline const TargetBitmapPtr
-ScalarIndexSort<T>::EvalIn(const string arith_op, const T right_operand, const T value) {
+ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
     if (!is_built_) {
         build();
     }
@@ -157,7 +157,7 @@ ScalarIndexSort<T>::EvalIn(const string arith_op, const T right_operand, const T
 
 template <typename T>
 inline const TargetBitmapPtr
-ScalarIndexSort<T>::EvalNotIn(const string arith_op, const T right_operand, const T value) {
+ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
     if (!is_built_) {
         build();
     }
