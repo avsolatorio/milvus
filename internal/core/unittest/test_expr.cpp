@@ -614,7 +614,7 @@ TEST(Expr, TestBinaryArithOpUnaryRange) {
         {R"("EQ": {
             "MOD": {
                 "right_operand": 100,
-                "value": 0
+                "value": 1029
             }
         })", [](int v) { return (v % 100) == 0; }},
     };
