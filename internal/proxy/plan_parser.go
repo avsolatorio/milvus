@@ -415,29 +415,29 @@ func (pc *parserContext) createCmpExpr(left, right ant_ast.Node, operator string
 }
 
 func (pc *parserContext) createBinaryArithOpCmpExpr(left *ant_ast.FunctionNode, right *ant_ast.Node, operator string) (*planpb.Expr, error) {
-	if operator != "==" || operator != "!=" {
-		return nil, fmt.Errorf("operator(%s) not yet supported for function nodes", operator)
-	}
+	switch operator {
+	case "==", "!=":
+		binArithOp, err := pc.handleFunction(left)
+		if err != nil {
+			return nil, fmt.Errorf("createBinaryArithOpCmpExpr: %v", err)
+		}
+		op := getCompareOpType(operator, false)
+		val, err := pc.handleLeafValue(right, binArithOp.ColumnInfo.DataType)
 
-	binArithOp, err := pc.handleFunction(left)
-	if err != nil {
-		return nil, fmt.Errorf("createBinaryArithOpCmpExpr: %v", err)
-	}
-	op := getCompareOpType(operator, false)
-	val, err := pc.handleLeafValue(right, binArithOp.ColumnInfo.DataType)
-
-	expr := &planpb.Expr{
-		Expr: &planpb.Expr_BinaryArithOpUnaryRangeExpr{
-			BinaryArithOpUnaryRangeExpr: &planpb.BinaryArithOpUnaryRangeExpr{
-				ColumnInfo:   binArithOp.ColumnInfo,
-				ArithOp:      binArithOp.ArithOp,
-				RightOperand: binArithOp.RightOperand,
-				Op:           op,
-				Value:        val,
+		expr := &planpb.Expr{
+			Expr: &planpb.Expr_BinaryArithOpUnaryRangeExpr{
+				BinaryArithOpUnaryRangeExpr: &planpb.BinaryArithOpUnaryRangeExpr{
+					ColumnInfo:   binArithOp.ColumnInfo,
+					ArithOp:      binArithOp.ArithOp,
+					RightOperand: binArithOp.RightOperand,
+					Op:           op,
+					Value:        val,
+				},
 			},
-		},
+		}
+		return expr, nil
 	}
-	return expr, nil
+	return nil, fmt.Errorf("operator(%s) not yet supported for function nodes", operator)
 }
 
 func (pc *parserContext) handleCmpExpr(node *ant_ast.BinaryNode) (*planpb.Expr, error) {
