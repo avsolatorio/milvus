@@ -251,9 +251,6 @@ Parser::ParseRangeNodeImpl(const FieldName& field_name, const Json& body) {
                 range: {
                     field_name: {
                         op: {
-                            // arith_op: operator,
-                            // right_operand: operand,
-                            // value: value
                             arith_op: {
                                 right_operand: operand,
                                 value: value
