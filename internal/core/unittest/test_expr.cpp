@@ -581,3 +581,101 @@ TEST(Expr, TestCompare) {
         }
     }
 }
+
+TEST(Expr, TestBinaryArithOpUnaryRange) {
+    using namespace milvus::query;
+    using namespace milvus::segcore;
+    std::vector<std::tuple<std::string, std::function<bool(int)>>> testcases = {
+        // Add test cases for BinaryArithOpUnaryRangeExpr
+        {R"("EQ": {
+            "ADD": {
+                "right_operand": 500,
+                "value": 3000
+            },
+        })", [](int v) {return (v + 500) == 2500}},
+        {R"("EQ": {
+            "SUB": {
+                "right_operand": 500,
+                "value": 1500
+            },
+        })", [](int v) {return (v - 500) == 1500}},
+        {R"("EQ": {
+            "MUL": {
+                "right_operand": 2,
+                "value": 4000
+            },
+        })", [](int v) {return (v * 2) == 4000}},
+        {R"("EQ": {
+            "DIV": {
+                "right_operand": 2,
+                "value": 1000
+            },
+        })", [](int v) {return (v / 2) == 1000}},
+        {R"("EQ": {
+            "MOD": {
+                "right_operand": 100,
+                "value": 0
+            },
+        })", [](int v) {return (v % 2) == 0}},
+    };
+
+    std::string dsl_string_tmp = R"({
+        "bool": {
+            "must": [
+                {
+                    "range": {
+                        "age": {
+                            @@@@
+                        }
+                    }
+                },
+                {
+                    "vector": {
+                        "fakevec": {
+                            "metric_type": "L2",
+                            "params": {
+                                "nprobe": 10
+                            },
+                            "query": "$0",
+                            "topk": 10,
+                            "round_decimal": 3
+                        }
+                    }
+                }
+            ]
+        }
+    })";
+    auto schema = std::make_shared<Schema>();
+    schema->AddDebugField("fakevec", DataType::VECTOR_FLOAT, 16, MetricType::METRIC_L2);
+    schema->AddDebugField("age", DataType::INT32);
+
+    auto seg = CreateGrowingSegment(schema);
+    int N = 1000;
+    std::vector<int> age_col;
+    int num_iters = 100;
+    for (int iter = 0; iter < num_iters; ++iter) {
+        auto raw_data = DataGen(schema, N, iter);
+        auto new_age_col = raw_data.get_col<int>(1);
+        age_col.insert(age_col.end(), new_age_col.begin(), new_age_col.end());
+        seg->PreInsert(N);
+        seg->Insert(iter * N, N, raw_data.row_ids_.data(), raw_data.timestamps_.data(), raw_data.raw_);
+    }
+
+    auto seg_promote = dynamic_cast<SegmentGrowingImpl*>(seg.get());
+    ExecExprVisitor visitor(*seg_promote, seg_promote->get_row_count(), MAX_TIMESTAMP);
+    for (auto [clause, ref_func] : testcases) {
+        auto loc = dsl_string_tmp.find("@@@@");
+        auto dsl_string = dsl_string_tmp;
+        dsl_string.replace(loc, 4, clause);
+        auto plan = CreatePlan(*schema, dsl_string);
+        auto final = visitor.call_child(*plan->plan_node_->predicate_.value());
+        EXPECT_EQ(final.size(), N * num_iters);
+
+        for (int i = 0; i < N * num_iters; ++i) {
+            auto ans = final[i];
+            auto val = age_col[i];
+            auto ref = ref_func(val);
+            ASSERT_EQ(ans, ref) << clause << "@" << i << "!!" << val;
+        }
+    }
+}
