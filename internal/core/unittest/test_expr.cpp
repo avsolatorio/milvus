@@ -616,7 +616,7 @@ TEST(Expr, TestBinaryArithOpUnaryRange) {
                 "right_operand": 100,
                 "value": 0
             }
-        })", [](int v) { return (v % 2) == 0; }},
+        })", [](int v) { return (v % 100) == 0; }},
     };
 
     std::string dsl_string_tmp = R"({
