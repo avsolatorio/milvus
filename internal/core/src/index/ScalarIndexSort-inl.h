@@ -145,7 +145,7 @@ ScalarIndexSort<T>::EvalIn(std::string arith_op, T right_operand, T value) {
                 bitset->set(lb->idx_);
             }
         } else if (arith_op == "mod") {
-            if (static_cast<T>fmod(lb->a_, right_operand) == value) {
+            if (static_cast<T>(fmod(lb->a_, right_operand)) == value) {
                 bitset->set(lb->idx_);
             }
         } else {
@@ -185,7 +185,7 @@ ScalarIndexSort<T>::EvalNotIn(std::string arith_op, T right_operand, T value) {
                 bitset->set(lb->idx_);
             }
         } else if (arith_op == "mod") {
-            if (static_cast<T>fmod(lb->a_, right_operand) == value) {
+            if (static_cast<T>(fmod(lb->a_, right_operand)) == value) {
                 bitset->set(lb->idx_);
             }
         } else {
