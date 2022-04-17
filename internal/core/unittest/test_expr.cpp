@@ -721,39 +721,39 @@ TEST(Expr, TestBinaryArithOpEvalRangeExceptions) {
                 "right_operand": 500,
                 "value": 2500.00
             }
-        })", "value.is_number_integer()", DataType::INT32},
+        })", "Assert \"(value.is_number_integer())\"", DataType::INT32},
         {R"("EQ": {
             "ADD": {
                 "right_operand": 500.0,
                 "value": 2500
             }
-        })", "right_operand.is_number_integer()", DataType::INT32},
+        })", "Assert \"(right_operand.is_number_integer())\"", DataType::INT32},
         {R"("EQ": {
             "ADD": {
                 "right_operand": 500.0,
                 "value": true
             }
-        })", "value.is_number()", DataType::FLOAT},
+        })", "Assert \"(value.is_number())\"", DataType::FLOAT},
         {R"("EQ": {
             "ADD": {
                 "right_operand": "500",
                 "value": 2500.0
             }
-        })", "right_operand.is_number()", DataType::FLOAT},
+        })", "Assert \"(right_operand.is_number())\"", DataType::FLOAT},
         // Check unsupported arithmetic operator type
         {R"("EQ": {
             "EXP": {
                 "right_operand": 500,
                 "value": 2500
             }
-        })", "arith_op_mapping_.count(arith_op_name)", DataType::INT32},
+        })", "arith op(exp) not found", DataType::INT32},
         // Check unsupported data type
         {R"("EQ": {
             "ADD": {
                 "right_operand": true,
                 "value": false
             }
-        })", "unsupported type", DataType::BOOL},
+        })", "bool type unsupported", DataType::BOOL},
     };
 
     std::string dsl_string_tmp = R"({
