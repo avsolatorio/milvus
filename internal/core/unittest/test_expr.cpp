@@ -675,7 +675,7 @@ TEST(Expr, TestBinaryArithOpUnaryRange) {
             auto ans = final[i];
             auto val = age_col[i];
             auto ref = ref_func(val);
-            ASSERT_EQ(ans, ref) << clause << "@" << i << "!!" << val;
+            ASSERT_EQ(ans, ref) << clause << "@" << i << "!!" << val << "@" << ans << "!!" << ref;
         }
     }
 }
