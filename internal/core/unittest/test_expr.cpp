@@ -592,7 +592,7 @@ TEST(Expr, TestBinaryArithOpUnaryRange) {
                 "right_operand": 500,
                 "value": 2500
             }
-        })", [](int v) { return (v + 500) == 2500; }},
+        })", [](int v) { return (v + 500) != 2500; }},
         {R"("EQ": {
             "SUB": {
                 "right_operand": 500,
