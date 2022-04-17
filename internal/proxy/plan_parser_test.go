@@ -361,6 +361,7 @@ func TestExprBinaryArithOp_Str(t *testing.T) {
 		assert.Nil(t, err)
 		dbgStr := proto.MarshalTextString(planProto)
 		println(dbgStr)
+
 	}
 }
 
