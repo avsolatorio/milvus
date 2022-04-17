@@ -330,6 +330,40 @@ func TestExprFieldCompare_Str(t *testing.T) {
 	}
 }
 
+func TestExprBinaryArithOp_Str(t *testing.T) {
+	exprStrs := []string{
+		"(age1 % 5) == 3",
+		"(age1 % 5) != 2",
+	}
+
+	fields := []*schemapb.FieldSchema{
+		{FieldID: 100, Name: "fakevec", DataType: schemapb.DataType_FloatVector},
+		{FieldID: 101, Name: "age1", DataType: schemapb.DataType_Int64},
+		{FieldID: 102, Name: "FloatN", DataType: schemapb.DataType_Float},
+	}
+
+	schema := &schemapb.CollectionSchema{
+		Name:        "default-collection",
+		Description: "",
+		AutoID:      true,
+		Fields:      fields,
+	}
+
+	queryInfo := &planpb.QueryInfo{
+		Topk:         10,
+		MetricType:   "L2",
+		SearchParams: "{\"nprobe\": 10}",
+	}
+
+	for offset, exprStr := range exprStrs {
+		fmt.Printf("case %d: %s\n", offset, exprStr)
+		planProto, err := createQueryPlan(schema, exprStr, "fakevec", queryInfo)
+		assert.Nil(t, err)
+		dbgStr := proto.MarshalTextString(planProto)
+		println(dbgStr)
+	}
+}
+
 func TestPlanParseAPIs(t *testing.T) {
 	t.Run("get compare op type", func(t *testing.T) {
 		var op planpb.OpType
