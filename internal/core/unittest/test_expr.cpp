@@ -812,7 +812,7 @@ TEST(Expr, TestBinaryArithOpEvalRangeExceptions) {
         } else if (dtype == DataType::BOOL) {
             dsl_string.replace(loc, 5, dsl_string_bool);
         } else {
-            ASSERT_TRUE(false) << "No test case defined for data type " << dtype;
+            ASSERT_TRUE(false) << "No test case defined for this data type";
         }
 
         loc = dsl_string.find("@@@@");
