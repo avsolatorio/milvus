@@ -714,7 +714,7 @@ TEST(Expr, TestBinaryArithOpEvalRange) {
 TEST(Expr, TestBinaryArithOpEvalRangeExceptions) {
     using namespace milvus::query;
     using namespace milvus::segcore;
-    std::vector<std::tuple<std::string, std::string>>> testcases = {
+    std::vector<std::tuple<std::string, std::string>> testcases = {
         // Add test for data type mismatch
         {R"("EQ": {
             "ADD": {
