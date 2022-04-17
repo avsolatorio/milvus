@@ -118,6 +118,85 @@ ScalarIndexSort<T>::In(const size_t n, const T* values) {
 
 template <typename T>
 inline const TargetBitmapPtr
+ScalarIndexSort<T>::EvalIn(const string arith_op, const T right_operand, const T value) {
+    if (!is_built_) {
+        build();
+    }
+    TargetBitmapPtr bitset = std::make_unique<TargetBitmap>(data_.size());
+
+    auto lb = data_.begin();
+    auto ub = data_.end();
+
+    for (; lb < ub; ++lb) {
+        if (arith_op == "add") {
+            if (lb->a_ + right_operand == value) {
+                bitset->set(lb->idx_);
+            }
+        } else if (arith_op == "sub") {
+            if (lb->a_ - right_operand == value) {
+                bitset->set(lb->idx_);
+            }
+        } else if (arith_op == "mul") {
+            if (lb->a_ * right_operand == value) {
+                bitset->set(lb->idx_);
+            }
+        } else if (arith_op == "div") {
+            if (lb->a_ / right_operand == value) {
+                bitset->set(lb->idx_);
+            }
+        } else if (arith_op == "mod") {
+            if (lb->a_ % right_operand == value) {
+                bitset->set(lb->idx_);
+            }
+        } else {
+            throw std::invalid_argument("ScalarIndexSort::EvalIn: invalid arith_op");
+        }
+    }
+    return bitset;
+}
+
+template <typename T>
+inline const TargetBitmapPtr
+ScalarIndexSort<T>::EvalNotIn(const string arith_op, const T right_operand, const T value) {
+    if (!is_built_) {
+        build();
+    }
+    TargetBitmapPtr bitset = std::make_unique<TargetBitmap>(data_.size());
+    bitset->set();
+
+    auto lb = data_.begin();
+    auto ub = data_.end();
+
+    for (; lb < ub; ++lb) {
+        if (arith_op == "add") {
+            if (lb->a_ + right_operand == value) {
+                bitset->set(lb->idx_);
+            }
+        } else if (arith_op == "sub") {
+            if (lb->a_ - right_operand == value) {
+                bitset->set(lb->idx_);
+            }
+        } else if (arith_op == "mul") {
+            if (lb->a_ * right_operand == value) {
+                bitset->set(lb->idx_);
+            }
+        } else if (arith_op == "div") {
+            if (lb->a_ / right_operand == value) {
+                bitset->set(lb->idx_);
+            }
+        } else if (arith_op == "mod") {
+            if (lb->a_ % right_operand == value) {
+                bitset->set(lb->idx_);
+            }
+        } else {
+            throw std::invalid_argument("ScalarIndexSort::EvalNotIn: invalid arith_op");
+        }
+    }
+    return bitset;
+}
+
+template <typename T>
+inline const TargetBitmapPtr
 ScalarIndexSort<T>::NotIn(const size_t n, const T* values) {
     if (!is_built_) {
         build();

@@ -32,6 +32,12 @@ class ScalarIndex : public IndexBase {
     NotIn(size_t n, const T* values) = 0;
 
     virtual const TargetBitmapPtr
+    EvalIn(string arith_op, T right_operand, T value) = 0;
+
+    virtual const TargetBitmapPtr
+    EvalNotIn(string arith_op, T right_operand, T value) = 0;
+
+    virtual const TargetBitmapPtr
     Range(T value, OperatorType op) = 0;
 
     virtual const TargetBitmapPtr
