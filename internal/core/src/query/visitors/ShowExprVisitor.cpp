@@ -274,9 +274,6 @@ ShowExprVisitor::visit(BinaryArithOpEvalRangeExpr& expr) {
     AssertInfo(!json_opt_.has_value(), "[ShowExprVisitor]Ret json already has value before visit");
     AssertInfo(datatype_is_vector(expr.data_type_) == false, "[ShowExprVisitor]Data type of expr isn't vector type");
     switch (expr.data_type_) {
-        case DataType::BOOL:
-            json_opt_ = BinaryArithOpEvalRangeExtract<bool>(expr);
-            return;
         case DataType::INT8:
             json_opt_ = BinaryArithOpEvalRangeExtract<int8_t>(expr);
             return;
