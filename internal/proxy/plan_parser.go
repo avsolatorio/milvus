@@ -479,6 +479,9 @@ func (pc *parserContext) createBinaryArithOpEvalExpr(left *ant_ast.FunctionNode,
 		}
 		op := getCompareOpType(operator, false)
 		val, err := pc.handleLeafValue(right, binArithOp.ColumnInfo.DataType)
+		if err != nil {
+			return nil, err
+		}
 
 		expr := &planpb.Expr{
 			Expr: &planpb.Expr_BinaryArithOpEvalRangeExpr{
@@ -775,7 +778,7 @@ func (pc *parserContext) handleFunction(node *ant_ast.FunctionNode) (*planpb.Bin
 		"div",
 		"mod":
 
-		arith_op, err := getArithOpType(node.Name)
+		funcArithOp, err := getArithOpType(node.Name)
 		if err != nil {
 			return nil, err
 		}
@@ -794,7 +797,7 @@ func (pc *parserContext) handleFunction(node *ant_ast.FunctionNode) (*planpb.Bin
 		}
 		arithOp := &planpb.BinaryArithOp{
 			ColumnInfo:   createColumnInfo(field),
-			ArithOp:      arith_op,
+			ArithOp:      funcArithOp,
 			RightOperand: val,
 		}
 
