@@ -113,25 +113,25 @@ enum class OpType {
 };
 
 enum class ArithOpType {
-  Add = 0,
-  Sub = 1,
-  Mul = 2,
-  Div = 3,
-  Mod = 4,
+    Add = 0,
+    Sub = 1,
+    Mul = 2,
+    Div = 3,
+    Mod = 4,
 };
 
 static const std::map<std::string, ArithOpType> arith_op_mapping_ = {
     // arith_op_name -> arith_op
-    {"add", ArithOpType::Add},    {"div", ArithOpType::Div},
-    {"mul", ArithOpType::Mul},    {"mod", ArithOpType::Mod},
-    {"sub", ArithOpType::Sub},
+    {"add", ArithOpType::Add}, {"sub", ArithOpType::Sub},
+    {"mul", ArithOpType::Mul}, {"div", ArithOpType::Div},
+    {"mod", ArithOpType::Mod},
 };
 
 static const std::map<ArithOpType, std::string> mapping_arith_op_ = {
     // arith_op_name -> arith_op
-    {ArithOpType::Add, "add"},    {ArithOpType::Div, "div"},
-    {ArithOpType::Mul, "mul"},    {ArithOpType::Mod, "mod"},
-    {ArithOpType::Sub, "sub"},
+    {ArithOpType::Add, "add"}, {ArithOpType::Sub, "sub"},
+    {ArithOpType::Mul, "mul"}, {ArithOpType::Div, "div"},
+    {ArithOpType::Mod, "mod"},
 };
 
 struct BinaryArithOpEvalRangeExpr : Expr {

@@ -251,10 +251,10 @@ ShowExprVisitor::visit(CompareExpr& expr) {
 template <typename T>
 static Json
 BinaryArithOpEvalRangeExtract(const BinaryArithOpEvalRangeExpr& expr_raw) {
-    using proto::plan::OpType;
-    using proto::plan::OpType_Name;
     using proto::plan::ArithOpType;
     using proto::plan::ArithOpType_Name;
+    using proto::plan::OpType;
+    using proto::plan::OpType_Name;
 
     auto expr = dynamic_cast<const BinaryArithOpEvalRangeExprImpl<T>*>(&expr_raw);
     AssertInfo(expr, "[ShowExprVisitor]BinaryArithOpEvalRangeExpr cast to BinaryArithOpEvalRangeExprImpl failed");
