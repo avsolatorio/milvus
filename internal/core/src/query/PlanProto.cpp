@@ -91,7 +91,9 @@ ExtractBinaryRangeExprImpl(FieldOffset field_offset, DataType data_type, const p
 
 template <typename T>
 std::unique_ptr<BinaryArithOpEvalRangeExprImpl<T>>
-ExtractBinaryArithOpEvalRangeExprImpl(FieldOffset field_offset, DataType data_type, const planpb::BinaryArithOpEvalRangeExpr& expr_proto) {
+ExtractBinaryArithOpEvalRangeExprImpl(FieldOffset field_offset,
+                                      DataType data_type,
+                                      const planpb::BinaryArithOpEvalRangeExpr& expr_proto) {
     static_assert(std::is_fundamental_v<T>);
     auto getValue = [&](const auto& value_proto) -> T {
         if constexpr (std::is_same_v<T, bool>) {
@@ -112,8 +114,7 @@ ExtractBinaryArithOpEvalRangeExprImpl(FieldOffset field_offset, DataType data_ty
         static_cast<ArithOpType>(expr_proto.arith_op()),
         getValue(expr_proto.right_operand()),
         static_cast<OpType>(expr_proto.op()),
-        getValue(expr_proto.value())
-    );
+        getValue(expr_proto.value()));
 }
 
 std::unique_ptr<VectorPlanNode>

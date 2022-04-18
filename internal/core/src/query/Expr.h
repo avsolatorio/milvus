@@ -144,7 +144,10 @@ struct BinaryArithOpEvalRangeExpr : Expr {
     // prevent accidential instantiation
     BinaryArithOpEvalRangeExpr() = delete;
 
-    BinaryArithOpEvalRangeExpr(const FieldOffset field_offset, const DataType data_type, const OpType op_type, const ArithOpType arith_op)
+    BinaryArithOpEvalRangeExpr(const FieldOffset field_offset,
+                               const DataType data_type,
+                               const OpType op_type,
+                               const ArithOpType arith_op)
         : field_offset_(field_offset), data_type_(data_type), op_type_(op_type), arith_op_(arith_op) {
     }
 
