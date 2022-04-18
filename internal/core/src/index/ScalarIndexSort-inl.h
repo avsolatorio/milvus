@@ -118,6 +118,141 @@ ScalarIndexSort<T>::In(const size_t n, const T* values) {
 
 template <typename T>
 inline const TargetBitmapPtr
+ScalarIndexSort<T>::EvalEq(std::string arith_op, T right_operand, T value) {
+    if (!is_built_) {
+        build();
+    }
+    TargetBitmapPtr bitset = std::make_unique<TargetBitmap>(data_.size());
+    auto lb = data_.begin();
+    auto ub = data_.end();
+
+    // For "add", "sub", "mul", and "div", we can use the lower_bound and upper_bound methods to limit the search range.
+    // Note that we need to perform the inverse operations on the bounds to get the correct results.
+    // NOTE: read about the modulo operator below.
+    if (arith_op == "add") {
+        lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
+        ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
+        for (; lb < ub; ++lb) {
+            if (lb->a_ + right_operand != value) {
+                std::cout << "error happens in ScalarIndexSort<T>::EvalEq, expected value is: " << value
+                          << ", but the evaluated value is: " << (lb->a_ + right_operand);
+            }
+            bitset->set(lb->idx_);
+        }
+    } else if (arith_op == "sub") {
+        lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
+        ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
+        for (; lb < ub; ++lb) {
+            if (lb->a_ - right_operand != value) {
+                std::cout << "error happens in ScalarIndexSort<T>::EvalEq, expected value is: " << value
+                          << ", but the evaluated value is: " << (lb->a_ - right_operand);
+            }
+            bitset->set(lb->idx_);
+        }
+    } else if (arith_op == "mul") {
+        lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
+        ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
+        for (; lb < ub; ++lb) {
+            if (lb->a_ * right_operand != value) {
+                std::cout << "error happens in ScalarIndexSort<T>::EvalEq, expected value is: " << value
+                          << ", but the evaluated value is: " << (lb->a_ * right_operand);
+            }
+            bitset->set(lb->idx_);
+        }
+    } else if (arith_op == "div") {
+        lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
+        ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
+        for (; lb < ub; ++lb) {
+            if (lb->a_ / right_operand != value) {
+                std::cout << "error happens in ScalarIndexSort<T>::EvalEq, expected value is: " << value
+                          << ", but the evaluated value is: " << (lb->a_ / right_operand);
+            }
+            bitset->set(lb->idx_);
+        }
+    } else if (arith_op == "mod") {
+        // Since there's is no inverse for the modulo operator, we can't use the same logic as for the other operations.
+        // This means that we need to do a full scan of the data.
+        for (; lb < ub; ++lb) {
+            if (static_cast<T>(fmod(lb->a_, right_operand)) == value) {
+                bitset->set(lb->idx_);
+            }
+        }
+    } else {
+        throw std::invalid_argument("ScalarIndexSort::EvalEq: invalid arith_op");
+    }
+    return bitset;
+}
+
+template <typename T>
+inline const TargetBitmapPtr
+ScalarIndexSort<T>::EvalNotEq(std::string arith_op, T right_operand, T value) {
+    if (!is_built_) {
+        build();
+    }
+    TargetBitmapPtr bitset = std::make_unique<TargetBitmap>(data_.size());
+    bitset->set();
+    auto lb = data_.begin();
+    auto ub = data_.end();
+
+    // For "add", "sub", "mul", and "div", we can use the lower_bound and upper_bound methods to limit the search range.
+    // Note that we need to perform the inverse operations on the bounds to get the correct results.
+    // NOTE: read about the modulo operator below.
+    if (arith_op == "add") {
+        lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
+        ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value - right_operand)));
+        for (; lb < ub; ++lb) {
+            if (lb->a_ + right_operand != value) {
+                std::cout << "error happens in ScalarIndexSort<T>::EvalNotEq, expected value is: " << value
+                          << ", but the evaluated value is: " << (lb->a_ + right_operand);
+            }
+            bitset->reset(lb->idx_);
+        }
+    } else if (arith_op == "sub") {
+        lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
+        ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value + right_operand)));
+        for (; lb < ub; ++lb) {
+            if (lb->a_ - right_operand != value) {
+                std::cout << "error happens in ScalarIndexSort<T>::EvalNotEq, expected value is: " << value
+                          << ", but the evaluated value is: " << (lb->a_ - right_operand);
+            }
+            bitset->reset(lb->idx_);
+        }
+    } else if (arith_op == "mul") {
+        lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
+        ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value / right_operand)));
+        for (; lb < ub; ++lb) {
+            if (lb->a_ * right_operand != value) {
+                std::cout << "error happens in ScalarIndexSort<T>::EvalNotEq, expected value is: " << value
+                          << ", but the evaluated value is: " << (lb->a_ * right_operand);
+            }
+            bitset->reset(lb->idx_);
+        }
+    } else if (arith_op == "div") {
+        lb = std::lower_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
+        ub = std::upper_bound(data_.begin(), data_.end(), IndexStructure<T>((value * right_operand)));
+        for (; lb < ub; ++lb) {
+            if (lb->a_ / right_operand != value) {
+                std::cout << "error happens in ScalarIndexSort<T>::EvalNotEq, expected value is: " << value
+                          << ", but the evaluated value is: " << (lb->a_ / right_operand);
+            }
+            bitset->reset(lb->idx_);
+        }
+    } else if (arith_op == "mod") {
+        // Since there's is no inverse for the modulo operator, we can't use the same logic as for the other operations.
+        // This means that we need to do a full scan of the data.
+        for (; lb < ub; ++lb) {
+            if (static_cast<T>(fmod(lb->a_, right_operand)) == value) {
+                bitset->reset(lb->idx_);
+            }
+        }
+    } else {
+        throw std::invalid_argument("ScalarIndexSort::EvalNotEq: invalid arith_op");
+    }
+    return bitset;
+}
+
+template <typename T>
+inline const TargetBitmapPtr
 ScalarIndexSort<T>::NotIn(const size_t n, const T* values) {
     if (!is_built_) {
         build();

@@ -50,6 +50,10 @@ class ExecExprVisitor : ExprVisitor {
 
     template <typename T>
     auto
+    ExecBinaryArithOpEvalRangeVisitorDispatcher(BinaryArithOpEvalRangeExpr& expr_raw) -> BitsetType;
+
+    template <typename T>
+    auto
     ExecBinaryRangeVisitorDispatcher(BinaryRangeExpr& expr_raw) -> BitsetType;
 
     template <typename T>
@@ -226,6 +230,157 @@ ExecExprVisitor::ExecUnaryRangeVisitorDispatcher(UnaryRangeExpr& expr_raw) -> Bi
 #pragma ide diagnostic ignored "Simplify"
 template <typename T>
 auto
+ExecExprVisitor::ExecBinaryArithOpEvalRangeVisitorDispatcher(BinaryArithOpEvalRangeExpr& expr_raw) -> BitsetType {
+    auto& expr = static_cast<BinaryArithOpEvalRangeExprImpl<T>&>(expr_raw);
+    using Index = scalar::ScalarIndex<T>;
+    auto arith_op = expr.arith_op_;
+    auto right_operand = expr.right_operand_;
+    auto op = expr.op_type_;
+    auto val = expr.value_;
+
+    switch (op) {
+        case OpType::Equal: {
+            switch (arith_op) {
+                case ArithOpType::Add: {
+                    auto index_func = [val, right_operand, arith_op](Index* index) {
+                        return index->EvalEq(mapping_arith_op_.at(arith_op), right_operand, val);
+                    };
+                    auto elem_func = [val, right_operand](T x) { return ((x + right_operand) == val); };
+                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                }
+                case ArithOpType::Sub: {
+                    auto index_func = [val, right_operand, arith_op](Index* index) {
+                        return index->EvalEq(mapping_arith_op_.at(arith_op), right_operand, val);
+                    };
+                    auto elem_func = [val, right_operand](T x) { return ((x - right_operand) == val); };
+                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                }
+                case ArithOpType::Mul: {
+                    auto index_func = [val, right_operand, arith_op](Index* index) {
+                        return index->EvalEq(mapping_arith_op_.at(arith_op), right_operand, val);
+                    };
+                    auto elem_func = [val, right_operand](T x) { return ((x * right_operand) == val); };
+                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                }
+                case ArithOpType::Div: {
+                    auto index_func = [val, right_operand, arith_op](Index* index) {
+                        return index->EvalEq(mapping_arith_op_.at(arith_op), right_operand, val);
+                    };
+                    auto elem_func = [val, right_operand](T x) { return ((x / right_operand) == val); };
+                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                }
+                case ArithOpType::Mod: {
+                    auto index_func = [val, right_operand, arith_op](Index* index) {
+                        return index->EvalEq(mapping_arith_op_.at(arith_op), right_operand, val);
+                    };
+                    auto elem_func = [val, right_operand](T x) {
+                        return (static_cast<T>(fmod(x, right_operand)) == val);
+                    };
+                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+
+                    // switch (expr.data_type_) {
+                    // case DataType::INT8:
+                    // case DataType::INT16:
+                    // case DataType::INT32:
+                    // case DataType::INT64: {
+                    //     auto index_func = [val](Index* index) { return index->In(1, &val); };
+                    //     auto elem_func = [val, right_operand](T x) { return ((x % right_operand) == val); };
+                    //     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                    //     break;
+                    // }
+                    // case DataType::FLOAT:
+                    // case DataType::DOUBLE: {
+                    //     auto index_func = [val](Index* index) { return index->In(1, &val); };
+                    //     auto elem_func = [val, right_operand](T x) { return (fmod(x, right_operand) == val); };
+                    //     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                    //     break;
+                    // }
+                    // default:
+                    //     PanicInfo("unsupported data type of modulo operation");
+                    //     break;
+                    // }
+                }
+                default: {
+                    PanicInfo("unsupported arithmetic operation");
+                }
+            }
+        }
+        case OpType::NotEqual: {
+            switch (arith_op) {
+                case ArithOpType::Add: {
+                    auto index_func = [val, right_operand, arith_op](Index* index) {
+                        return index->EvalNotEq(mapping_arith_op_.at(arith_op), right_operand, val);
+                    };
+                    auto elem_func = [val, right_operand](T x) { return ((x + right_operand) != val); };
+                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                }
+                case ArithOpType::Sub: {
+                    auto index_func = [val, right_operand, arith_op](Index* index) {
+                        return index->EvalNotEq(mapping_arith_op_.at(arith_op), right_operand, val);
+                    };
+                    auto elem_func = [val, right_operand](T x) { return ((x - right_operand) != val); };
+                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                }
+                case ArithOpType::Mul: {
+                    auto index_func = [val, right_operand, arith_op](Index* index) {
+                        return index->EvalNotEq(mapping_arith_op_.at(arith_op), right_operand, val);
+                    };
+                    auto elem_func = [val, right_operand](T x) { return ((x * right_operand) != val); };
+                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                }
+                case ArithOpType::Div: {
+                    auto index_func = [val, right_operand, arith_op](Index* index) {
+                        return index->EvalNotEq(mapping_arith_op_.at(arith_op), right_operand, val);
+                    };
+                    auto elem_func = [val, right_operand](T x) { return ((x / right_operand) != val); };
+                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                }
+                case ArithOpType::Mod: {
+                    auto index_func = [val, right_operand, arith_op](Index* index) {
+                        return index->EvalNotEq(mapping_arith_op_.at(arith_op), right_operand, val);
+                    };
+                    auto elem_func = [val, right_operand](T x) {
+                        return (static_cast<T>(fmod(x, right_operand)) != val);
+                    };
+                    return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                    // switch (expr.data_type_) {
+                    // case DataType::INT8:
+                    // case DataType::INT16:
+                    // case DataType::INT32:
+                    // case DataType::INT64: {
+                    //     auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
+                    //     auto elem_func = [val, right_operand](T x) { return ((x % right_operand) != val); };
+                    //     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                    //     break;
+                    // }
+                    // case DataType::FLOAT:
+                    // case DataType::DOUBLE: {
+                    //     auto index_func = [val](Index* index) { return index->NotIn(1, &val); };
+                    //     auto elem_func = [val, right_operand](T x) { return (fmod(x, right_operand) != val); };
+                    //     return ExecRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                    //     break;
+                    // }
+                    // default:
+                    //     PanicInfo("unsupported data type of modulo operation");
+                    //     break;
+                    // }
+                }
+                default: {
+                    PanicInfo("unsupported arithmetic operation");
+                }
+            }
+        }
+        default: {
+            PanicInfo("unsupported range node with arithmetic operation");
+        }
+    }
+}
+#pragma clang diagnostic pop
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "Simplify"
+template <typename T>
+auto
 ExecExprVisitor::ExecBinaryRangeVisitorDispatcher(BinaryRangeExpr& expr_raw) -> BitsetType {
     auto& expr = static_cast<BinaryRangeExprImpl<T>&>(expr_raw);
     using Index = scalar::ScalarIndex<T>;
@@ -288,6 +443,44 @@ ExecExprVisitor::visit(UnaryRangeExpr& expr) {
         }
         case DataType::DOUBLE: {
             res = ExecUnaryRangeVisitorDispatcher<double>(expr);
+            break;
+        }
+        default:
+            PanicInfo("unsupported");
+    }
+    AssertInfo(res.size() == row_count_, "[ExecExprVisitor]Size of results not equal row count");
+    bitset_opt_ = std::move(res);
+}
+
+void
+ExecExprVisitor::visit(BinaryArithOpEvalRangeExpr& expr) {
+    auto& field_meta = segment_.get_schema()[expr.field_offset_];
+    AssertInfo(expr.data_type_ == field_meta.get_data_type(),
+               "[ExecExprVisitor]DataType of expr isn't field_meta data type");
+    BitsetType res;
+    switch (expr.data_type_) {
+        case DataType::INT8: {
+            res = ExecBinaryArithOpEvalRangeVisitorDispatcher<int8_t>(expr);
+            break;
+        }
+        case DataType::INT16: {
+            res = ExecBinaryArithOpEvalRangeVisitorDispatcher<int16_t>(expr);
+            break;
+        }
+        case DataType::INT32: {
+            res = ExecBinaryArithOpEvalRangeVisitorDispatcher<int32_t>(expr);
+            break;
+        }
+        case DataType::INT64: {
+            res = ExecBinaryArithOpEvalRangeVisitorDispatcher<int64_t>(expr);
+            break;
+        }
+        case DataType::FLOAT: {
+            res = ExecBinaryArithOpEvalRangeVisitorDispatcher<float>(expr);
+            break;
+        }
+        case DataType::DOUBLE: {
+            res = ExecBinaryArithOpEvalRangeVisitorDispatcher<double>(expr);
             break;
         }
         default:

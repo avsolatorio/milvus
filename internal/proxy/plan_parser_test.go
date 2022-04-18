@@ -330,6 +330,75 @@ func TestExprFieldCompare_Str(t *testing.T) {
 	}
 }
 
+func TestExprBinaryArithOp_Str(t *testing.T) {
+	exprStrs := []string{
+		// Basic arithmetic
+		"(age1 + 5) == 2",
+		// Float data type
+		"(FloatN - 5.2) == 0",
+		// Other operators
+		"(age1 - 5) == 1",
+		"(age1 * 5) == 6",
+		"(age1 / 5) == 1",
+		"(age1 % 5) == 0",
+		// Allow for commutative property for + and *
+		"(6 + age1) != 2",
+		"(age1 * 4) != 9",
+		"(5 * FloatN) != 0",
+		"(9 * FloatN) != 0",
+	}
+
+	unsupportedExprStrs := []string{
+		// Comparison operators except for "==" and "!=" are unsupported
+		"(age1 + 2) > 4",
+		"(age1 + 2) >= 4",
+		"(age1 + 2) < 4",
+		"(age1 + 2) <= 4",
+		// Functional nodes at the right of the comparison are not allowed
+		"0 == (age1 + 3)",
+		// Field as the right operand for -, /, and % operators are not supported
+		"(10 - age1) == 0",
+		"(20 / age1) == 0",
+		"(30 % age1) == 0",
+		// Modulo is not supported in the parser but the engine can handle it since fmod is used
+		"(FloatN % 2.1) == 0",
+	}
+
+	fields := []*schemapb.FieldSchema{
+		{FieldID: 100, Name: "fakevec", DataType: schemapb.DataType_FloatVector},
+		{FieldID: 101, Name: "age1", DataType: schemapb.DataType_Int64},
+		{FieldID: 102, Name: "FloatN", DataType: schemapb.DataType_Float},
+	}
+
+	schema := &schemapb.CollectionSchema{
+		Name:        "default-collection",
+		Description: "",
+		AutoID:      true,
+		Fields:      fields,
+	}
+
+	queryInfo := &planpb.QueryInfo{
+		Topk:         10,
+		MetricType:   "L2",
+		SearchParams: "{\"nprobe\": 10}",
+	}
+
+	for offset, exprStr := range exprStrs {
+		fmt.Printf("case %d: %s\n", offset, exprStr)
+		planProto, err := createQueryPlan(schema, exprStr, "fakevec", queryInfo)
+		assert.Nil(t, err)
+		dbgStr := proto.MarshalTextString(planProto)
+		println(dbgStr)
+	}
+	for offset, exprStr := range unsupportedExprStrs {
+		fmt.Printf("case %d: %s\n", offset, exprStr)
+		planProto, err := createQueryPlan(schema, exprStr, "fakevec", queryInfo)
+		assert.Error(t, err)
+		dbgStr := proto.MarshalTextString(planProto)
+		println(dbgStr)
+	}
+}
+
 func TestPlanParseAPIs(t *testing.T) {
 	t.Run("get compare op type", func(t *testing.T) {
 		var op planpb.OpType

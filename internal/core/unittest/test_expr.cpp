@@ -581,3 +581,253 @@ TEST(Expr, TestCompare) {
         }
     }
 }
+
+TEST(Expr, TestBinaryArithOpEvalRange) {
+    using namespace milvus::query;
+    using namespace milvus::segcore;
+    std::vector<std::tuple<std::string, std::function<bool(int)>>> testcases = {
+        // Add test cases for BinaryArithOpEvalRangeExpr EvalEq
+        {R"("EQ": {
+            "ADD": {
+                "right_operand": 500,
+                "value": 2500
+            }
+        })", [](int v) { return (v + 500) == 2500; }},
+        {R"("EQ": {
+            "SUB": {
+                "right_operand": 500,
+                "value": 1500
+            }
+        })", [](int v) { return (v - 500) == 1500; }},
+        {R"("EQ": {
+            "MUL": {
+                "right_operand": 2,
+                "value": 4000
+            }
+        })", [](int v) { return (v * 2) == 4000; }},
+        {R"("EQ": {
+            "DIV": {
+                "right_operand": 2,
+                "value": 1000
+            }
+        })", [](int v) { return (v / 2) == 1000; }},
+        {R"("EQ": {
+            "MOD": {
+                "right_operand": 100,
+                "value": 0
+            }
+        })", [](int v) { return (v % 100) == 0; }},
+        // Add test cases for BinaryArithOpEvalRangeExpr EvalNotEq
+        {R"("NE": {
+            "ADD": {
+                "right_operand": 500,
+                "value": 2500
+            }
+        })", [](int v) { return (v + 500) != 2500; }},
+        {R"("NE": {
+            "SUB": {
+                "right_operand": 500,
+                "value": 1500
+            }
+        })", [](int v) { return (v - 500) != 1500; }},
+        {R"("NE": {
+            "MUL": {
+                "right_operand": 2,
+                "value": 4000
+            }
+        })", [](int v) { return (v * 2) != 4000; }},
+        {R"("NE": {
+            "DIV": {
+                "right_operand": 2,
+                "value": 1000
+            }
+        })", [](int v) { return (v / 2) != 1000; }},
+        {R"("NE": {
+            "MOD": {
+                "right_operand": 100,
+                "value": 0
+            }
+        })", [](int v) { return (v % 100) != 0; }},
+    };
+
+    std::string dsl_string_tmp = R"({
+        "bool": {
+            "must": [
+                {
+                    "range": {
+                        "age": {
+                            @@@@
+                        }
+                    }
+                },
+                {
+                    "vector": {
+                        "fakevec": {
+                            "metric_type": "L2",
+                            "params": {
+                                "nprobe": 10
+                            },
+                            "query": "$0",
+                            "topk": 10,
+                            "round_decimal": 3
+                        }
+                    }
+                }
+            ]
+        }
+    })";
+    auto schema = std::make_shared<Schema>();
+    schema->AddDebugField("fakevec", DataType::VECTOR_FLOAT, 16, MetricType::METRIC_L2);
+    schema->AddDebugField("age", DataType::INT32);
+
+    auto seg = CreateGrowingSegment(schema);
+    int N = 1000;
+    std::vector<int> age_col;
+    int num_iters = 100;
+    for (int iter = 0; iter < num_iters; ++iter) {
+        auto raw_data = DataGen(schema, N, iter);
+        auto new_age_col = raw_data.get_col<int>(1);
+        age_col.insert(age_col.end(), new_age_col.begin(), new_age_col.end());
+        seg->PreInsert(N);
+        seg->Insert(iter * N, N, raw_data.row_ids_.data(), raw_data.timestamps_.data(), raw_data.raw_);
+    }
+
+    auto seg_promote = dynamic_cast<SegmentGrowingImpl*>(seg.get());
+    ExecExprVisitor visitor(*seg_promote, seg_promote->get_row_count(), MAX_TIMESTAMP);
+    for (auto [clause, ref_func] : testcases) {
+        auto loc = dsl_string_tmp.find("@@@@");
+        auto dsl_string = dsl_string_tmp;
+        dsl_string.replace(loc, 4, clause);
+        auto plan = CreatePlan(*schema, dsl_string);
+        auto final = visitor.call_child(*plan->plan_node_->predicate_.value());
+        EXPECT_EQ(final.size(), N * num_iters);
+
+        for (int i = 0; i < N * num_iters; ++i) {
+            auto ans = final[i];
+            auto val = age_col[i];
+            auto ref = ref_func(val);
+            ASSERT_EQ(ans, ref) << clause << "@" << i << "!!" << val << "@" << ans << "!!" << ref;
+        }
+    }
+}
+
+TEST(Expr, TestBinaryArithOpEvalRangeExceptions) {
+    using namespace milvus::query;
+    using namespace milvus::segcore;
+    std::vector<std::tuple<std::string, std::string, DataType>> testcases = {
+        // Add test for data type mismatch
+        {R"("EQ": {
+            "ADD": {
+                "right_operand": 500,
+                "value": 2500.00
+            }
+        })", "Assert \"(value.is_number_integer())\"", DataType::INT32},
+        {R"("EQ": {
+            "ADD": {
+                "right_operand": 500.0,
+                "value": 2500
+            }
+        })", "Assert \"(right_operand.is_number_integer())\"", DataType::INT32},
+        {R"("EQ": {
+            "ADD": {
+                "right_operand": 500.0,
+                "value": true
+            }
+        })", "Assert \"(value.is_number())\"", DataType::FLOAT},
+        {R"("EQ": {
+            "ADD": {
+                "right_operand": "500",
+                "value": 2500.0
+            }
+        })", "Assert \"(right_operand.is_number())\"", DataType::FLOAT},
+        // Check unsupported arithmetic operator type
+        {R"("EQ": {
+            "EXP": {
+                "right_operand": 500,
+                "value": 2500
+            }
+        })", "arith op(exp) not found", DataType::INT32},
+        // Check unsupported data type
+        {R"("EQ": {
+            "ADD": {
+                "right_operand": true,
+                "value": false
+            }
+        })", "bool type is not supported", DataType::BOOL},
+    };
+
+    std::string dsl_string_tmp = R"({
+        "bool": {
+            "must": [
+                {
+                    "range": {
+                        @@@@@
+                    }
+                },
+                {
+                    "vector": {
+                        "fakevec": {
+                            "metric_type": "L2",
+                            "params": {
+                                "nprobe": 10
+                            },
+                            "query": "$0",
+                            "topk": 10,
+                            "round_decimal": 3
+                        }
+                    }
+                }
+            ]
+        }
+    })";
+
+    std::string dsl_string_int = R"(
+        "age": {
+            @@@@
+        })";
+
+    std::string dsl_string_num = R"(
+        "FloatN": {
+            @@@@
+        })";
+
+    std::string dsl_string_bool = R"(
+        "BoolField": {
+            @@@@
+        })";
+
+    auto schema = std::make_shared<Schema>();
+    schema->AddDebugField("fakevec", DataType::VECTOR_FLOAT, 16, MetricType::METRIC_L2);
+    schema->AddDebugField("age", DataType::INT32);
+    schema->AddDebugField("FloatN", DataType::FLOAT);
+    schema->AddDebugField("BoolField", DataType::BOOL);
+
+    for (auto [clause, assert_info, dtype] : testcases) {
+        auto loc = dsl_string_tmp.find("@@@@@");
+        auto dsl_string = dsl_string_tmp;
+        if (dtype == DataType::INT32) {
+            dsl_string.replace(loc, 5, dsl_string_int);
+        } else if (dtype == DataType::FLOAT) {
+            dsl_string.replace(loc, 5, dsl_string_num);
+        } else if (dtype == DataType::BOOL) {
+            dsl_string.replace(loc, 5, dsl_string_bool);
+        } else {
+            ASSERT_TRUE(false) << "No test case defined for this data type";
+        }
+
+        loc = dsl_string.find("@@@@");
+        dsl_string.replace(loc, 4, clause);
+
+        try {
+            auto plan = CreatePlan(*schema, dsl_string);
+            FAIL() << "Expected AssertionError: " << assert_info << " not thrown";
+        }
+        catch(const std::exception& err) {
+            std::string err_msg = err.what();
+            ASSERT_TRUE(err_msg.find(assert_info) != std::string::npos);
+        }
+        catch(...) {
+            FAIL() << "Expected AssertionError: " << assert_info << " not thrown";
+        }
+    }
+}
