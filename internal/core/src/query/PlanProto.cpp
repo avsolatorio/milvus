@@ -97,8 +97,8 @@ ExtractBinaryArithOpEvalRangeExprImpl(FieldOffset field_offset,
     static_assert(std::is_fundamental_v<T>);
     auto getValue = [&](const auto& value_proto) -> T {
         if constexpr (std::is_same_v<T, bool>) {
-            Assert(value_proto.val_case() == planpb::GenericValue::kBoolVal);
-            return static_cast<T>(value_proto.bool_val());
+            // Handle bool here. Otherwise, it can go in `is_integral_v<T>`
+            static_assert(always_false<T>);
         } else if constexpr (std::is_integral_v<T>) {
             Assert(value_proto.val_case() == planpb::GenericValue::kInt64Val);
             return static_cast<T>(value_proto.int64_val());
@@ -372,9 +372,6 @@ ProtoParser::ParseBinaryArithOpEvalRangeExpr(const proto::plan::BinaryArithOpEva
 
     auto result = [&]() -> ExprPtr {
         switch (data_type) {
-            case DataType::BOOL: {
-                return ExtractBinaryArithOpEvalRangeExprImpl<bool>(field_offset, data_type, expr_pb);
-            }
             case DataType::INT8: {
                 return ExtractBinaryArithOpEvalRangeExprImpl<int8_t>(field_offset, data_type, expr_pb);
             }
