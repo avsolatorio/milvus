@@ -36,6 +36,9 @@ class ExecExprVisitor : public ExprVisitor {
     visit(UnaryRangeExpr& expr) override;
 
     void
+    visit(BinaryArithOpEvalRangeExpr& expr) override;
+
+    void
     visit(BinaryRangeExpr& expr) override;
 
     void
@@ -64,6 +67,10 @@ class ExecExprVisitor : public ExprVisitor {
     template <typename T>
     auto
     ExecUnaryRangeVisitorDispatcher(UnaryRangeExpr& expr_raw) -> BitsetType;
+
+    template <typename T>
+    auto
+    ExecBinaryArithOpEvalRangeVisitorDispatcher(BinaryArithOpEvalRangeExpr& expr_raw) -> BitsetType;
 
     template <typename T>
     auto

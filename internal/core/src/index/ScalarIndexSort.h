@@ -50,6 +50,12 @@ class ScalarIndexSort : public ScalarIndex<T> {
     NotIn(size_t n, const T* values) override;
 
     const TargetBitmapPtr
+    EvalEq(std::string arith_op, T right_operand, T value) override;
+
+    const TargetBitmapPtr
+    EvalNotEq(std::string arith_op, T right_operand, T value) override;
+
+    const TargetBitmapPtr
     Range(T value, OperatorType op) override;
 
     const TargetBitmapPtr
