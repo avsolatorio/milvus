@@ -178,7 +178,7 @@ ExecExprVisitor::ExecRangeVisitorImpl(FieldOffset field_offset, IndexFunc index_
     return final_result;
 }
 
-template <typename T, typename IndexFunc, typename ElementFunc>
+template <typename T, typename ElementFunc>
 auto
 ExecExprVisitor::ExecDataRangeVisitorImpl(FieldOffset field_offset, ElementFunc element_func)
     -> BitsetType {
