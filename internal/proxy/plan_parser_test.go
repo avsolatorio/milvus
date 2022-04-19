@@ -157,6 +157,66 @@ func TestParseExpr_Naive(t *testing.T) {
 			assert.Nil(t, exprProto)
 		}
 	})
+
+	t.Run("test BinaryArithOpNode", func(t *testing.T) {
+		exprStrs := []string{
+			// "+"
+			"FloatField + 1.2 == 3",
+			"Int64Field + 3 == 5",
+			"1.2 + FloatField != 3",
+			"3 + Int64Field != 5",
+			// "-"
+			"FloatField - 1.2 == 3",
+			"Int64Field - 3 != 5",
+			// "*"
+			"FloatField * 1.2 == 3",
+			"Int64Field * 3 == 5",
+			"1.2 * FloatField != 3",
+			"3 * Int64Field != 5",
+			// "/"
+			"FloatField / 1.2 == 3",
+			"Int64Field / 3 != 5",
+			// "%"
+			"Int64Field % 7 == 5",
+		}
+		for _, exprStr := range exprStrs {
+			exprProto, err := parseExpr(schema, exprStr)
+			assert.Nil(t, err)
+			str := proto.MarshalTextString(exprProto)
+			println(str)
+		}
+	})
+
+	t.Run("test BinaryArithOpNode invalid", func(t *testing.T) {
+		exprStrs := []string{
+			// "+"
+			"FloatField + FloatField == 20",
+			"Int64Field + Int64Field != 10",
+			// "-"
+			"FloatField - FloatField == 20.0",
+			"Int64Field - Int64Field != 10",
+			"10 - FloatField == 20",
+			"20 - Int64Field != 10",
+			// "*"
+			"FloatField * FloatField == 20",
+			"Int64Field * Int64Field != 10",
+			// "/"
+			"FloatField / FloatField == 20",
+			"Int64Field / Int64Field != 10",
+			"FloatField / 0 == 20",
+			"Int64Field / 0 != 10",
+			// "%"
+			"Int64Field % Int64Field != 10",
+			"FloatField % 0 == 20",
+			"Int64Field % 0 != 10",
+			"FloatField % 2.3 == 20",
+		}
+		for _, exprStr := range exprStrs {
+			exprProto, err := parseExpr(schema, exprStr)
+			assert.Error(t, err)
+			assert.Nil(t, exprProto)
+		}
+	})
 }
 
 func TestParsePlanNode_Naive(t *testing.T) {
