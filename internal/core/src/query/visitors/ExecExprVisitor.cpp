@@ -180,8 +180,7 @@ ExecExprVisitor::ExecRangeVisitorImpl(FieldOffset field_offset, IndexFunc index_
 
 template <typename T, typename ElementFunc>
 auto
-ExecExprVisitor::ExecDataRangeVisitorImpl(FieldOffset field_offset, ElementFunc element_func)
-    -> BitsetType {
+ExecExprVisitor::ExecDataRangeVisitorImpl(FieldOffset field_offset, ElementFunc element_func) -> BitsetType {
     auto& schema = segment_.get_schema();
     auto& field_meta = schema[field_offset];
     auto size_per_chunk = segment_.size_per_chunk();
