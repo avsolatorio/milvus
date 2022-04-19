@@ -206,7 +206,7 @@ inline bool OpType_Parse(
     OpType_descriptor(), name, value);
 }
 enum ArithOpType : int {
-  Unk = 0,
+  Unknown = 0,
   Add = 1,
   Sub = 2,
   Mul = 3,
@@ -216,7 +216,7 @@ enum ArithOpType : int {
   ArithOpType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::max()
 };
 bool ArithOpType_IsValid(int value);
-constexpr ArithOpType ArithOpType_MIN = Unk;
+constexpr ArithOpType ArithOpType_MIN = Unknown;
 constexpr ArithOpType ArithOpType_MAX = Mod;
 constexpr int ArithOpType_ARRAYSIZE = ArithOpType_MAX + 1;
 
