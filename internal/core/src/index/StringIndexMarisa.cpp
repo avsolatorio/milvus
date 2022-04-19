@@ -148,16 +148,6 @@ StringIndexMarisa::NotIn(size_t n, const std::string* values) {
     return bitset;
 }
 
-// const TargetBitmapPtr
-// StringIndexMarisa::EvalEq(std::string arith_op, std::string right_operand, std::string value) {
-//     throw std::runtime_error("todo: unsupported now");
-// }
-
-// const TargetBitmapPtr
-// StringIndexMarisa::EvalNotEq(std::string arith_op, std::string right_operand, std::string value) {
-//     throw std::runtime_error("todo: unsupported now");
-// }
-
 const TargetBitmapPtr
 StringIndexMarisa::Range(std::string value, OperatorType op) {
     throw std::runtime_error("todo: unsupported now");

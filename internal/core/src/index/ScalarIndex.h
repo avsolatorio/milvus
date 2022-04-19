@@ -31,12 +31,6 @@ class ScalarIndex : public IndexBase {
     virtual const TargetBitmapPtr
     NotIn(size_t n, const T* values) = 0;
 
-    // virtual const TargetBitmapPtr
-    // EvalEq(std::string arith_op, T right_operand, T value) = 0;
-
-    // virtual const TargetBitmapPtr
-    // EvalNotEq(std::string arith_op, T right_operand, T value) = 0;
-
     virtual const TargetBitmapPtr
     Range(T value, OperatorType op) = 0;
 
