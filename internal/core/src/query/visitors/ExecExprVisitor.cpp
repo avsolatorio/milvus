@@ -390,7 +390,7 @@ ExecExprVisitor::ExecBinaryArithOpEvalRangeVisitorDispatcher(BinaryArithOpEvalRa
                     auto elem_func = [val, right_operand](T x) {
                         return (static_cast<T>(fmod(x, right_operand)) != val);
                     };
-                    return ExecDataRangeVisitorImpl<T>(expr.field_offset_, index_func, elem_func);
+                    return ExecDataRangeVisitorImpl<T>(expr.field_offset_, elem_func);
                 }
                 default: {
                     PanicInfo("unsupported arithmetic operation");
