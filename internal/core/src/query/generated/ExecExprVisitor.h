@@ -64,6 +64,10 @@ class ExecExprVisitor : public ExprVisitor {
     auto
     ExecRangeVisitorImpl(FieldOffset field_offset, IndexFunc func, ElementFunc element_func) -> BitsetType;
 
+    template <typename T, typename ElementFunc>
+    auto
+    ExecDataRangeVisitorImpl(FieldOffset field_offset, ElementFunc element_func) -> BitsetType;
+
     template <typename T>
     auto
     ExecUnaryRangeVisitorDispatcher(UnaryRangeExpr& expr_raw) -> BitsetType;
