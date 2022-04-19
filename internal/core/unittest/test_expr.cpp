@@ -586,13 +586,13 @@ TEST(Expr, TestBinaryArithOpEvalRange) {
     using namespace milvus::query;
     using namespace milvus::segcore;
     std::vector<std::tuple<std::string, std::function<bool(int)>, DataType>> testcases = {
-        // Add test cases for BinaryArithOpEvalRangeExpr EvalEq
+        // Add test cases for BinaryArithOpEvalRangeExpr EvalEq of various data types
         {R"("EQ": {
             "ADD": {
-                "right_operand": 500,
-                "value": 2500
+                "right_operand": 4,
+                "value": 8
             }
-        })", [](int8_t v) { return (v + 500) == 2500; }, DataType::INT8},
+        })", [](int8_t v) { return (v + 4) == 8; }, DataType::INT8},
         {R"("EQ": {
             "SUB": {
                 "right_operand": 500,
@@ -629,7 +629,7 @@ TEST(Expr, TestBinaryArithOpEvalRange) {
                 "value": 2500
             }
         })", [](double v) { return (v + 500) == 2500; }, DataType::DOUBLE},
-        // Add test cases for BinaryArithOpEvalRangeExpr EvalNotEq
+        // Add test cases for BinaryArithOpEvalRangeExpr EvalNotEq of various data types
         {R"("NE": {
             "ADD": {
                 "right_operand": 500,
@@ -645,9 +645,9 @@ TEST(Expr, TestBinaryArithOpEvalRange) {
         {R"("NE": {
             "MUL": {
                 "right_operand": 2,
-                "value": 4000
+                "value": 2
             }
-        })", [](int8_t v) { return (v * 2) != 4000; }, DataType::INT8},
+        })", [](int8_t v) { return (v * 2) != 2; }, DataType::INT8},
         {R"("NE": {
             "DIV": {
                 "right_operand": 2,
@@ -770,11 +770,11 @@ TEST(Expr, TestBinaryArithOpEvalRange) {
         auto dsl_string = dsl_string_tmp;
         if (dtype == DataType::INT8) {
             dsl_string.replace(loc, 5, dsl_string_int8);
-        if (dtype == DataType::INT16) {
+        } else if (dtype == DataType::INT16) {
             dsl_string.replace(loc, 5, dsl_string_int16);
-        if (dtype == DataType::INT32) {
+        } else if (dtype == DataType::INT32) {
             dsl_string.replace(loc, 5, dsl_string_int32);
-        if (dtype == DataType::INT64) {
+        } else if (dtype == DataType::INT64) {
             dsl_string.replace(loc, 5, dsl_string_int64);
         } else if (dtype == DataType::FLOAT) {
             dsl_string.replace(loc, 5, dsl_string_float);
@@ -791,24 +791,33 @@ TEST(Expr, TestBinaryArithOpEvalRange) {
 
         for (int i = 0; i < N * num_iters; ++i) {
             auto ans = final[i];
-
             if (dtype == DataType::INT8) {
                 auto val = age8_col[i];
+                auto ref = ref_func(val);
+                ASSERT_EQ(ans, ref) << clause << "@" << i << "!!" << val;
             } else if (dtype == DataType::INT16) {
                 auto val = age16_col[i];
+                auto ref = ref_func(val);
+                ASSERT_EQ(ans, ref) << clause << "@" << i << "!!" << val;
             } else if (dtype == DataType::INT32) {
                 auto val = age32_col[i];
+                auto ref = ref_func(val);
+                ASSERT_EQ(ans, ref) << clause << "@" << i << "!!" << val;
             } else if (dtype == DataType::INT64) {
                 auto val = age64_col[i];
+                auto ref = ref_func(val);
+                ASSERT_EQ(ans, ref) << clause << "@" << i << "!!" << val;
             } else if (dtype == DataType::FLOAT) {
                 auto val = age_float_col[i];
+                auto ref = ref_func(val);
+                ASSERT_EQ(ans, ref) << clause << "@" << i << "!!" << val;
             } else if (dtype == DataType::DOUBLE) {
                 auto val = age_double_col[i];
+                auto ref = ref_func(val);
+                ASSERT_EQ(ans, ref) << clause << "@" << i << "!!" << val;
             } else {
                 ASSERT_TRUE(false) << "No test case defined for this data type";
             }
-            auto ref = ref_func(val);
-            ASSERT_EQ(ans, ref) << clause << "@" << i << "!!" << val << "@" << ans << "!!" << ref;
         }
     }
 }
