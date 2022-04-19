@@ -347,7 +347,7 @@ func getArithOpType(funcName string) (planpb.ArithOpType, error) {
 	case "mod":
 		op = planpb.ArithOpType_Mod
 	default:
-		return op, fmt.Errorf("invalid arith op type: %s", funcName)
+		return op, fmt.Errorf("unsupported or invalid arith op type: %s", funcName)
 	}
 	return op, nil
 }
@@ -682,11 +682,7 @@ func (pc *parserContext) handleBinaryExpr(node *ant_ast.BinaryNode) (*planpb.Exp
 	_, arithExpr := node.Left.(*ant_ast.FunctionNode)
 
 	if arithExpr {
-		switch node.Operator {
-		case "==", "!=":
-			return pc.handleBinaryArithCmpExpr(node)
-		}
-		return nil, fmt.Errorf("unsupported binary arithmetic operator %s", node.Operator)
+		return pc.handleBinaryArithCmpExpr(node)
 	}
 
 	switch node.Operator {
@@ -770,41 +766,34 @@ func (pc *parserContext) handleLeafValue(nodeRaw *ant_ast.Node, dataType schemap
 }
 
 func (pc *parserContext) handleFunction(node *ant_ast.FunctionNode) (*planpb.BinaryArithOp, error) {
-	switch node.Name {
-	case
-		"add",
-		"sub",
-		"mul",
-		"div",
-		"mod":
-
-		funcArithOp, err := getArithOpType(node.Name)
-		if err != nil {
-			return nil, err
-		}
-		idNode, ok := node.Arguments[0].(*ant_ast.IdentifierNode)
-		if !ok {
-			return nil, fmt.Errorf("left operand of the function must be an identifier")
-		}
-		field, err := pc.handleIdentifier(idNode)
-		if err != nil {
-			return nil, err
-		}
-		valueNode := node.Arguments[1]
-		val, err := pc.handleLeafValue(&valueNode, field.DataType)
-		if err != nil {
-			return nil, err
-		}
-		arithOp := &planpb.BinaryArithOp{
-			ColumnInfo:   createColumnInfo(field),
-			ArithOp:      funcArithOp,
-			RightOperand: val,
-		}
-
-		return arithOp, nil
-	default:
-		return nil, fmt.Errorf("unsupported function (%s)", node.Name)
+	funcArithOp, err := getArithOpType(node.Name)
+	if err != nil {
+		return nil, err
 	}
+
+	idNode, ok := node.Arguments[0].(*ant_ast.IdentifierNode)
+	if !ok {
+		return nil, fmt.Errorf("left operand of the function must be an identifier")
+	}
+
+	field, err := pc.handleIdentifier(idNode)
+	if err != nil {
+		return nil, err
+	}
+
+	valueNode := node.Arguments[1]
+	val, err := pc.handleLeafValue(&valueNode, field.DataType)
+	if err != nil {
+		return nil, err
+	}
+
+	arithOp := &planpb.BinaryArithOp{
+		ColumnInfo:   createColumnInfo(field),
+		ArithOp:      funcArithOp,
+		RightOperand: val,
+	}
+
+	return arithOp, nil
 }
 
 func (pc *parserContext) handleIdentifier(node *ant_ast.IdentifierNode) (*schemapb.FieldSchema, error) {
@@ -900,3 +889,4 @@ func createExprPlan(schemaPb *schemapb.CollectionSchema, exprStr string) (*planp
 	}
 	return planNode, nil
 }
+
