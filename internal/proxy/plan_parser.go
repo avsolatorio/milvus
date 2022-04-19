@@ -75,10 +75,10 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 		// Check IdentifierNodes
 		identifierNodeLeft, leftIdentifier := node.Left.(*ant_ast.IdentifierNode)
 		identifierNodeRight, rightIdentifier := node.Right.(*ant_ast.IdentifierNode)
-		funcName, err := getFuncNameByNodeOp(node.Operator)
 
 		switch node.Operator {
 		case "+":
+			funcName, err := getFuncNameByNodeOp(node.Operator)
 			if err != nil {
 				optimizer.err = err
 				return
@@ -104,6 +104,7 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 				return
 			}
 		case "-":
+			funcName, err := getFuncNameByNodeOp(node.Operator)
 			if err != nil {
 				optimizer.err = err
 				return
@@ -131,6 +132,7 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 				return
 			}
 		case "*":
+			funcName, err := getFuncNameByNodeOp(node.Operator)
 			if err != nil {
 				optimizer.err = err
 				return
@@ -156,6 +158,7 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 				return
 			}
 		case "/":
+			funcName, err := getFuncNameByNodeOp(node.Operator)
 			if err != nil {
 				optimizer.err = err
 				return
@@ -207,6 +210,7 @@ func (optimizer *optimizer) Exit(node *ant_ast.Node) {
 				return
 			}
 		case "%":
+			funcName, err := getFuncNameByNodeOp(node.Operator)
 			if err != nil {
 				optimizer.err = err
 				return
@@ -889,4 +893,3 @@ func createExprPlan(schemaPb *schemapb.CollectionSchema, exprStr string) (*planp
 	}
 	return planNode, nil
 }
-
